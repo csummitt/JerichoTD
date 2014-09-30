@@ -1,0 +1,37 @@
+<html>
+	<link rel="stylesheet" type="text/css" media="all" href="resources/css/options.css" />
+	<title>Options</title>
+	<head>
+		<script type="text/javascript">
+		function updateMusicText(val) {
+			document.getElementById('musiclabel').value=val + "%"; 
+		}
+		function updateSFXText(val) {
+			document.getElementById('sfxlabel').value=val + "%"; 
+		}
+  </script>
+	</head>
+	<body>
+		<div id="container">
+			<h1> Options </h1>
+			<table id="options">
+				<tr><!--Music Slider -->
+					<td id="Music">
+						<pre>Music:</pre>
+						<input id="musicSlider" type="range" min="0" max="100" value="100" onchange="updateMusicText(this.value);">	
+						<input type="text" id="musiclabel" value="100%">
+					</td>
+				</tr>
+				<tr><!--Sound Effect Slider -->
+					<td id="sfx">
+						<pre>SFX:</pre>
+						
+						<input id="sfxSlider" type="range" min="0" max="100" value="100" onchange="updateSFXText(this.value);">
+						<input type="text" id="sfxlabel" value="100%">
+					</td>
+				</tr>
+			</table>
+			<a href="mainmenu.html" id="back" ><img src="resources/menu/back.png" class="imgbutton"></img></a><br /><br />
+		</div>
+	</body>
+</html>
