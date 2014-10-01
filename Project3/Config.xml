@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+    <widget xmlns   = "http://www.w3.org/ns/widgets"
+        xmlns:gap   = "http://phonegap.com/ns/1.0"
+        id          = "com.gmail.csummitt09"
+        versionCode = "001" 
+        version     = "0.0.1" >
+
+    <!-- versionCode is optional and Android only -->
+
+    <name>Jericho TD</name>
+
+    <description>
+        A rough draft of a survival tower defence
+    </description>
+
+    <author href="https://build.phonegap.com" email="support@phonegap.com">
+        Christopher Summitt
+    </author>
+
+</widget>
