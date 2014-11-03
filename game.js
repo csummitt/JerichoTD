@@ -2,8 +2,8 @@
 //System Vars
 //------------
 var stage = document.getElementById("gameCanvas");
-stage.width = STAGE_WIDTH;
-stage.height = STAGE_HEIGHT;
+//stage.width = STAGE_WIDTH;
+//stage.height = STAGE_HEIGHT;
 var ctx = stage.getContext("2d");
 ctx.fillStyle = "grey";
 ctx.font = GAME_FONTS;
@@ -174,8 +174,8 @@ function preloading()
 //Temp Camera Vars
 cameraLocX = imgSize*0;
 cameraLocY = imgSize*0;
-cameraWidth = 960;
-cameraHeight = 540;
+cameraWidth = stage.width;//960;
+cameraHeight = stage.height;//540;
 //
 function update()
 {		
