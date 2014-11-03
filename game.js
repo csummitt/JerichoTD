@@ -48,6 +48,10 @@ var Towers = [];
 var Creeps = [];
 
 var airdragon = [];
+var wdragon = [];
+var fdragon = [];
+var gdragon = [];
+var bdragon = [];
 
 var ongoingTouches = new Array();
 function preloading()
@@ -93,7 +97,72 @@ function preloading()
 				tempImg.src = "game/assets/img/air-dragon/walking/air-walking-w000" + (i-24) + ".png" 
 				airdragon[i] = tempImg;
 			}
-		}
+		} //end of air dragon
+		for(var i = 0; i < 32;i++){
+	            tempImg = new Image()
+	            if(i < 8){
+	                tempImg.src = "game/assets/img/water-dragon/walking/water-walking-n000" + i + ".png";
+	                wdragon[i] = tempImg;
+	            } else if(i < 16){
+	                tempImg.src = "game/assets/img/water-dragon/walking/water-walking-e000" + (i-8) + ".png"
+	                wdragon[i] = tempImg;
+	            } else if(i < 24){
+	                tempImg.src = "game/assets/img/water-dragon/walking/water-walking-s000" + (i-16) + ".png"
+	                wdragon[i] = tempImg;
+	            } else {
+	                tempImg.src = "game/assets/img/water-dragon/walking/water-walking-w000" + (i-24) + ".png"
+	                wdragon[i] = tempImg;
+	            }
+	        }//end of water dragon
+	        for(var i = 0; i < 32;i++){
+	            tempImg = new Image()
+	            if(i < 8){
+	                tempImg.src = "game/assets/img/fire-dragon/walking/fire-walking-n000" + i + ".png";
+	                fdragon[i] = tempImg;
+	            } else if(i < 16){
+	                tempImg.src = "game/assets/img/fire-dragon/walking/fire-walking-e000" + (i-8) + ".png"
+	                fdragon[i] = tempImg;
+	            } else if(i < 24){
+	                tempImg.src = "game/assets/img/fire-dragon/walking/fire-walking-s000" + (i-16) + ".png"
+	                fdragon[i] = tempImg;
+	            } else {
+	                tempImg.src = "game/assets/img/fire-dragon/walking/fire-walking-w000" + (i-24) + ".png"
+	                fdragon[i] = tempImg;
+	            }
+	        }//end of fire dragon
+	        for(var i = 0; i < 32;i++){
+	            tempImg = new Image()
+	            if(i < 8){
+	                tempImg.src = "game/assets/img/gold-dragon/walking/gold-walking-n000" + i + ".png";
+	                gdragon[i] = tempImg;
+	            } else if(i < 16){
+	                tempImg.src = "game/assets/img/gold-dragon/walking/gold-walking-e000" + (i-8) + ".png"
+	                gdragon[i] = tempImg;
+	            } else if(i < 24){
+	                tempImg.src = "game/assets/img/gold-dragon/walking/gold-walking-s000" + (i-16) + ".png"
+	                gdragon[i] = tempImg;
+	            } else {
+	                tempImg.src = "game/assets/img/gold-dragon/walking/gold-walking-w000" + (i-24) + ".png"
+	                gdragon[i] = tempImg;
+	            }
+	        }//end of gold dragon
+	        for(var i = 0; i < 32;i++){
+	            tempImg = new Image()
+	            if(i < 8){
+	                tempImg.src = "game/assets/img/black-dragon/walking/black-walking-n000" + i + ".png";
+	                bdragon[i] = tempImg;
+	            } else if(i < 16){
+	                tempImg.src = "game/assets/img/black-dragon/walking/black-walking-e000" + (i-8) + ".png"
+	                bdragon[i] = tempImg;
+	            } else if(i < 24){
+	                tempImg.src = "game/assets/img/black-dragon/walking/black-walking-s000" + (i-16) + ".png"
+	                bdragon[i] = tempImg;
+	            } else {
+	                tempImg.src = "game/assets/img/black-dragon/walking/black-walking-w000" + (i-24) + ".png"
+	                bdragon[i] = tempImg;
+	            }
+	        }//end of black dragon
+
 		waveSetup();
 		gameloop = setInterval(update, TIME_PER_FRAME);	
 }
