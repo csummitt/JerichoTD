@@ -369,7 +369,9 @@ function resizeCanvas(){
 function handleStart(evt) {
 	evt.preventDefault();
 	console.log("touchstart.");
-	var touches = evt.changedTouches;
+	touchX = evt.changedTouches[0].pageX;
+	touchY = evt.changedTouches[0].pageY;
+	/* var touches = evt.changedTouches;
 	//ctx.fillStyle = "black";
 	//ctx.fillRect(0, 0, stage.width, stage.height);	
 	for (var i=0; i < touches.length;i++){
@@ -381,8 +383,8 @@ function handleStart(evt) {
 		//ctx.fillStyle = color;
 		//ctx.fill();
 		
-		console.og("touchstart:"+i+".");
-	}
+		console.log("touchstart:"+i+".");
+	} */
 
 }
 
