@@ -62,11 +62,11 @@ function preloading()
 {	
 	clearInterval(preloader);
 	//Register Touch Events
-	stage.addEventListener("touchstart", handleStart, false);
-	stage.addEventListener("touchend", handleEnd, false);
-	stage.addEventListener("touchcancel", handleCancel, false);
-	stage.addEventListener("touchleave", handleEnd, false);
-	stage.addEventListener("touchmove", handleMove, false);
+	stage.addEventListener('touchstart', handleStart, false);
+	stage.addEventListener('touchend', handleEnd, false);
+	stage.addEventListener('touchcancel', handleCancel, false);
+	stage.addEventListener('touchleave', handleEnd, false);
+	stage.addEventListener('touchmove', handleMove, false);
 	
 	
 	//Create Grid
