@@ -1,63 +1,64 @@
 <html>
 	<link rel="stylesheet" type="text/css" media="all" href="resources/css/profile.css" />
 	<link rel="stylesheet" type="text/css" media="all" href="resources/css/background.css" />
+
 	<title>Profile</title>
 	
 	<body>
-		<div id="background">
+		<div id="container">
 			<h1>Profile</h1>
 			<div class="progressBar">
-				0/200
+				<label id="curExp">0</label>/<label id="needExp">200</label>
 			</div>
 			<table id="wave-stats">
 				<tr>
 					<td>        Farthest Wave:</td>
-					<td>0</td>
+					<td><label id="Farthest">0</label></td>
 					<td>Total Waves Completed:</td>
-					<td>0</td>
+					<td><label id="totalWaves">0</label></td>
 				</tr>
 				<tr>
 					<td colspan="2">Total Creeps Killed:</td>
-					<td colspan="1">0</td>
+					<td colspan="1"><label id="totalCreeps">0</label></td>
 				</tr>
 				<tr>
 					<td> Total Normal Creeps: </td>
-					<td>0</td>
+					<td><label id="normalCreeps">0</label></td>
 					<td>Total Armored Creeps:</td>
-					<td>0</td>
+					<td><label id="armoredCreeps">0</label></td>
 				</tr>
 				<tr>
 					<td> Total Mob Creeps: </td>
-					<td>0</td>
+					<td><label id="mobCreeps">0</label></td>
 					<td>Total Fast Creeps:</td>
-					<td>0</td>
+					<td><label id="fastCreeps">0</label></td>
 				</tr>
 				<tr>
 					<td>Total Splitter Creeps:</td>
-					<td>0</td>
+					<td><label id="splitterCreeps">0</label></td>
 					<td>    Total Boss Creeps:</td>
-					<td>0</td>
+					<td><label id="bossCreeps">0</label></td>
 				</tr>
 			</table>
 			
 			<table id="tower-stats">
 				<tr>
 					<td>Total Towers Built:</td>
-					<td>0</td>
+					<td><label id="towersBuilt">0</label></td>
 					<td>    Favorite Tower:</td>
-					<td>Basic</td>
+					<td><label id="favTower">Basic</label></td>
 				</tr>
 				<tr>
 					<td>Total Basic Towers:</td>
-					<td>0</td>
+					<td><label id="basicTowers">0</label></td>
 					<td>  Total Rapid Fire:</td>
-					<td>0</td>
+					<td><label id="rapidTowers">0</label></td>
 				</tr>
 				<tr>
 					<td>       Total Splash:</td>
-					<td>0</td>
-					<td>Total Sniper Towers:</td>
-					<td>0</td>
+					<td><label id="splashTowers">0</label></td>
+					<td>Total Split Towers:</td>
+					<td><label id="splitTowers">0</label></td>
 				</tr>
 			</table>
 			<a href="index.html" id="back" ><img src="resources/menu/back.png" class="imgbutton"></img></a><br /><br />

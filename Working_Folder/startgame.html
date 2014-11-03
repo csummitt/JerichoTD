@@ -1,0 +1,88 @@
+<html>
+	<link rel="stylesheet" type="text/css" media="all" href="resources/css/setup.css" />
+	<link rel="stylesheet" type="text/css" media="all" href="resources/css/background.css" />
+
+	<script src="gameSetup.js"></script>
+	<title>Setup</title>
+	<body>
+		<div id="container">
+			<div class="profile">
+				<table id="profileTable"><!--Want a 2x3 table-->
+					<tr>
+						<td id="imgCell" rowspan="2"><img src="resources/profile/rank1.jpg"></img></td>
+						<td><label id="PlyName">PlayerName</label></td>
+						<td><!-- need a blank here for a third column--> 
+					</tr>
+					<tr>
+						<td><div id="progressbar">Level <label id="playerLevel">1</label></div></td>
+						<td id="difCell">Difficulty: <label id="diffMult">x1.00</label></td>
+					</tr>
+				</table>
+			</div>
+			
+			<br />
+			
+			<table id="SetupTable">
+				<tr>
+					<th>Creep HP:</th>	
+					<th>Creep Amount:</th>	
+					<th>Wave Type:</th>	
+					<th>Creep Damage:</th>
+				</tr>
+				<tr>
+					<td><input type="checkbox" onclick=update_diff(this) name="50%HP" value="0.585">50%<br></td>
+					<td><input type="checkbox" onclick=update_diff(this) name="50%Amt" value="0.585">0.5x</td>
+					<td><input type="checkbox" onclick=update_diff(this) name="ArmTyp" value="1.5">Armored Only</td>
+					<td><input type="checkbox" onclick=update_diff(this) name="50%Dmg" value="0.585">50%</td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" onclick=update_diff(this) name="75%HP" value="0.9285">75%<br></td>
+					<td><input type="checkbox" onclick=update_diff(this) name="100%Amt" value="1.0" checked>1.0x</td>
+					<td><input type="checkbox" onclick=update_diff(this) name="SplTyp" value="1.35">Splitter Only</td>
+					<td><input type="checkbox" onclick=update_diff(this) name="75%Dmg" value="0.9285">75%</td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" onclick=update_diff(this) name="100%HP" value="1.0" checked>100%<br></td>
+					<td><input type="checkbox" onclick=update_diff(this) name="200%Amt" value="1.25">2.0x</td>
+					<td><input type="checkbox" onclick=update_diff(this) name="FstTyp" value="1.15">Fast Only</td>
+					<td><input type="checkbox" onclick=update_diff(this) name="100%Dmg" value="1.0" checked>100%</td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" onclick=update_diff(this) name="125%HP" value="1.25">125%<br></td>
+					<td><input type="checkbox" onclick=update_diff(this) name="250%Amt" value="1.5">2.5x</td>
+					<td><input type="checkbox" onclick=update_diff(this) name="MobTyp" value="1.25">Mob Only</td>
+					<td><input type="checkbox" onclick=update_diff(this) name="125%Dmg" value="1.25">125%</td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" onclick=update_diff(this) name="150%HP" value="1.5">150%<br></td>
+					<td><input type="checkbox" onclick=update_diff(this) name="300%Amt" value="1.75">3.0x</td>
+					<td><input type="checkbox" onclick=update_diff(this) name="BssType" value="1.5">Boss Only</td>
+					<td><input type="checkbox" onclick=update_diff(this) name="150%Dmg" value="1.5">150%</td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" onclick=update_diff(this) name="200%HP" value="1.75">200%<br></td>
+					<td><input type="checkbox" onclick=update_diff(this) name="400%Amt" value="2.0">4.0x</td>
+					<td><!--Need a blank here--> </td>
+					<td><input type="checkbox" onclick=update_diff(this) name="175%Dmg" value="1.75">175%</td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" onclick=update_diff(this) name="250%HP" value="2.0">250%<br></td>
+					<td><input type="checkbox" onclick=update_diff(this) name="500%Amt" value="2.25">5.0x</td>
+					<td><!--Need a blank here--> </td>
+					<td><input type="checkbox" onclick=update_diff(this) name="200%Dmg" value="2.0">200%</td>
+				</tr>
+			</table>
+			
+			<br />
+			
+			<table id="buttonBar">
+				<tr>
+					<td><a href="index.html" id="back" ><img src="resources/menu/back.png" align="left" class="imgbutton" ></img></a></td><!--Align left -->
+					<td><a href="game.html" id="next" ><img src="resources/menu/next.png" align="right" class="imgbutton"></img></a></td><!--Align right -->
+				</tr>
+			</table>
+			
+		</div>
+	</body>
+	
+</html>
