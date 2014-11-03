@@ -2,7 +2,8 @@ function handleStart(evt) {
 	evt.preventDefault();
 	console.log("touchstart.");
 	var touches = evt.changedTouches;
-	
+	ctx.fillStyle = "grey";
+	ctx.fillRect(0, 0, stage.width, stage.height);	
 	for (var i=0; i < touches.length;i++){
 		log("tochstart:"+i+"...");
 		ongoingTouches.push(copyTouch(touches[i]));

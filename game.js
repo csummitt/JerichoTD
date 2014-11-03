@@ -247,34 +247,39 @@ function update()
 	//Creep Movement
 	for(var i = 0; i < Creeps.length; i++){
 		if(Creeps[i].dir == 0){
-			Creeps[i].locY = Creeps[i].locY - (Creeps[i].baseSpeed/TIME_PER_FRAME)/2;
+			Creeps[i].locY = Creeps[i].locY - (Creeps[i].baseSpeed/(TIME_PER_FRAME*2))/3;
 			if(Creeps[i].locY <= getRandomArbitrary(5,8)*imgSize){
 				Creeps[i].dir = Creeps[i].dir + 1;
 				//console.log("Direction " + Creeps[i].dir);
 			}
 		} else if (Creeps[i].dir == 1){
-			Creeps[i].locX = Creeps[i].locX + (Creeps[i].baseSpeed/TIME_PER_FRAME)/2;
+			Creeps[i].locX = Creeps[i].locX + (Creeps[i].baseSpeed/(TIME_PER_FRAME*2))/3;
 			if(Creeps[i].locX >= getRandomArbitrary(86,89)*imgSize){
 				Creeps[i].dir = Creeps[i].dir + 1;
 				//console.log("Direction " + Creeps[i].dir);
 			}
 		} else if (Creeps[i].dir == 2){
-			Creeps[i].locY = Creeps[i].locY + (Creeps[i].baseSpeed/TIME_PER_FRAME)/2;
+			Creeps[i].locY = Creeps[i].locY + (Creeps[i].baseSpeed/(TIME_PER_FRAME*2))/3;
 			if(Creeps[i].locY >= getRandomArbitrary(86,89)*imgSize){
 				Creeps[i].dir = Creeps[i].dir + 1;
 				//console.log("Direction " + Creeps[i].dir);
 			}
 		} else {
-			Creeps[i].locX = Creeps[i].locX - (Creeps[i].baseSpeed/TIME_PER_FRAME)/2;
+			Creeps[i].locX = Creeps[i].locX - (Creeps[i].baseSpeed/(TIME_PER_FRAME*2))/3;
 			if(Creeps[i].locX <= getRandomArbitrary(5,8)*imgSize){
 				Creeps[i].dir = 0;
 				//console.log("Direction " + Creeps[i].dir);
 			}
 		}
-		if(Creeps[i].currentImg > 6){
-			Creeps[i].currentImg = 0;
+		if(Creeps[i].imgSpeed == 0){
+			Creeps[i].imgSpeed = 2;
+			if(Creeps[i].currentImg > 6){
+				Creeps[i].currentImg = 0;
+			} else {
+				Creeps[i].currentImg = Creeps[i].currentImg + 1;
+			}
 		} else {
-			Creeps[i].currentImg = Creeps[i].currentImg + 1;
+				Creeps[i].imgSpeed = Creeps[i].imgSpeed-1;
 		}
 	}
 }
@@ -295,7 +300,7 @@ function waveSpawner()
 	console.log("In Wave " + wave + " Spawner");
 	clearInterval(waveSetup);
 	timerwaveSetup = setTimeout(waveSetup,20000);
-	timerspawnDelay = setInterval(spawnCreeps,spawnDelay);
+	timerspawnDelay = setInterval(spawnCreeps,spawnDelay*2);
 	
 
 
@@ -304,11 +309,13 @@ function waveSpawner()
 var modifierTestArray = [];
 function spawnCreeps(){
 	console.log("Spawning Creeps");
-	tempCreep = new Creep(wave,"Basic",imgSize*getRandomArbitrary(0,2),imgSize*getRandomArbitrary(6,8),modifierTestArray,airdragon);
+	tempCreep = new Creep(wave,"Basic",imgSize*getRandomArbitrary(0,1),imgSize*getRandomArbitrary(6.5,7.5),modifierTestArray,airdragon);
 	tempCreep.dir = 1;
+	tempCreep.currentImg = getRandomInt(0,7);
 	Creeps.push(tempCreep);
-	tempCreep = new Creep(wave,"Basic",imgSize*getRandomArbitrary(94,96),imgSize*getRandomArbitrary(86,88),modifierTestArray,airdragon);
+	tempCreep = new Creep(wave,"Basic",imgSize*getRandomArbitrary(95,96),imgSize*getRandomArbitrary(86.5,87.5),modifierTestArray,airdragon);
 	tempCreep.dir = 3;
+	tempCreep.currentImg = getRandomInt(0,7);
 	Creeps.push(tempCreep);
 	
 	Creeps.sort(function(a,b) { return parseFloat(a.locY) - parseFloat(b.locY) } );

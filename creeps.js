@@ -6,7 +6,7 @@ var Creep = function(wave,type,locX,locY,modifiers,imgs){
 	
 	//Stat Variables
 	this.baseHP = (wave*25)+((25*(wave-1))/8) ^2;
-	this.baseSpeed = 200;
+	this.baseSpeed = 100;
 	this.baseArmor = Math.floor(wave/5);
 	
 	
@@ -41,7 +41,7 @@ var Creep = function(wave,type,locX,locY,modifiers,imgs){
 	//Image Variables
 	this.dir = 0;
 	this.imgs = imgs;
-	this.imgSpeed = 2;
+	this.imgSpeed = 3;
 	this.currentImg = 0;
 	
 }
