@@ -242,7 +242,7 @@ function update()
 	//Draw HUD
 	ctx.font = '20pt Calibri';
 	ctx.fillStyle = 'red';
-	ctx.strokeText("Touch X: " + touchX + " Touch Y: " + touchY,stage.width*0.1,stage.height*0.05);
+	ctx.fillText("Touch X: " + touchX + " Touch Y: " + touchY,stage.width*0.1,stage.height*0.05);
 	
 	
 	//Tower Movement

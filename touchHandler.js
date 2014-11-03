@@ -12,7 +12,8 @@ function handleStart(evt) {
 		//ctx.arc(touches[i].pageX, touches[i].pageY, 4, 0, 2*Math.PI, false); //A circle at the start
 		//ctx.fillStyle = color;
 		//ctx.fill();
-		
+		touchX = touches[i].pageX;
+		touchY = touches[i].pageY;
 		console.og("touchstart:"+i+".");
 	}
 
