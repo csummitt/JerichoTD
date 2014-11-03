@@ -8,6 +8,9 @@ var ctx = stage.getContext("2d");
 ctx.fillStyle = "grey";
 ctx.font = GAME_FONTS;
 
+var touchX = -5;
+var touchY = -5;
+
 window.addEventListener('resize', resizeCanvas, false);
 //---------------
 //Preloading ...
@@ -237,7 +240,9 @@ function update()
 	
 	
 	//Draw HUD
-	
+	ctx.font = '20pt Calibri';
+	ctx.fillStyle = 'red';
+	ctx.strokeText("Touch X: " + touchX + " Touch Y: " + touchY,stage.width-stage.width*0.1,stage.height-stage.height*0.05);
 	
 	
 	//Tower Movement

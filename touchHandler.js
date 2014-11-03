@@ -2,16 +2,17 @@ function handleStart(evt) {
 	evt.preventDefault();
 	console.log("touchstart.");
 	var touches = evt.changedTouches;
-	ctx.fillStyle = "black";
-	ctx.fillRect(0, 0, stage.width, stage.height);	
+	//ctx.fillStyle = "black";
+	//ctx.fillRect(0, 0, stage.width, stage.height);	
 	for (var i=0; i < touches.length;i++){
 		log("tochstart:"+i+"...");
 		ongoingTouches.push(copyTouch(touches[i]));
-		var color = colorForTouch(touches[i]);
-		ctx.beginPath();
-		ctx.arc(touches[i].pageX, touches[i].pageY, 4, 0, 2*Math.PI, false); //A circle at the start
-		ctx.fillStyle = color;
-		ctx.fill();
+		//var color = colorForTouch(touches[i]);
+		//ctx.beginPath();
+		//ctx.arc(touches[i].pageX, touches[i].pageY, 4, 0, 2*Math.PI, false); //A circle at the start
+		//ctx.fillStyle = color;
+		//ctx.fill();
+		
 		console.og("touchstart:"+i+".");
 	}
 
@@ -27,14 +28,14 @@ function handleMove(evt) {
 
     if(idx >= 0) {
       log("continuing touch "+idx);
-      ctx.beginPath();
-      log("ctx.moveTo("+ongoingTouches[idx].pageX+", "+ongoingTouches[idx].pageY+");");
-      ctx.moveTo(ongoingTouches[idx].pageX, ongoingTouches[idx].pageY);
-      log("ctx.lineTo("+touches[i].pageX+", "+touches[i].pageY+");");
-      ctx.lineTo(touches[i].pageX, touches[i].pageY);
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = color;
-      ctx.stroke();
+     // ctx.beginPath();
+     // log("ctx.moveTo("+ongoingTouches[idx].pageX+", "+ongoingTouches[idx].pageY+");");
+      // ctx.moveTo(ongoingTouches[idx].pageX, ongoingTouches[idx].pageY);
+      // log("ctx.lineTo("+touches[i].pageX+", "+touches[i].pageY+");");
+      // ctx.lineTo(touches[i].pageX, touches[i].pageY);
+      // ctx.lineWidth = 4;
+      // ctx.strokeStyle = color;
+      // ctx.stroke();
 
       ongoingTouches.splice(idx, 1, copyTouch(touches[i]));  // swap in the new touch record
       log(".");
@@ -54,12 +55,14 @@ function handleEnd(evt) {
     var idx = ongoingTouchIndexById(touches[i].identifier);
 
     if(idx >= 0) {
-      ctx.lineWidth = 4;
-      ctx.fillStyle = color;
-      ctx.beginPath();
-      ctx.moveTo(ongoingTouches[idx].pageX, ongoingTouches[idx].pageY);
-      ctx.lineTo(touches[i].pageX, touches[i].pageY);
-      ctx.fillRect(touches[i].pageX-4, touches[i].pageY-4, 8, 8);  // and a square at the end
+      //ctx.lineWidth = 4;
+      //ctx.fillStyle = color;
+      //ctx.beginPath();
+      //ctx.moveTo(ongoingTouches[idx].pageX, ongoingTouches[idx].pageY);
+      //ctx.lineTo(touches[i].pageX, touches[i].pageY);
+      //ctx.fillRect(touches[i].pageX-4, touches[i].pageY-4, 8, 8);  // and a square at the end
+	  touchX = touches[i].pageX;
+	  touchY = touches[i].pageY;
       ongoingTouches.splice(idx, 1);  // remove it; we're done
     } else {
       log("can't figure out which touch to end");
