@@ -2,12 +2,13 @@
 //System Vars
 //------------
 var stage = document.getElementById("gameCanvas");
-//stage.width = STAGE_WIDTH;
-//stage.height = STAGE_HEIGHT;
+stage.width = window.innerWidth;
+stage.height = window.innerHeight;
 var ctx = stage.getContext("2d");
 ctx.fillStyle = "grey";
 ctx.font = GAME_FONTS;
 
+window.addEventListener('resize', resizeCanvas, false);
 //---------------
 //Preloading ...
 //---------------
@@ -178,7 +179,9 @@ cameraWidth = stage.width;//960;
 cameraHeight = stage.height;//540;
 //
 function update()
-{		
+{	
+	cameraWidth = stage.width;//960;
+	cameraHeight = stage.height;//540;
 	//Re-Order Images so the one on-top should be on-top
 	Creeps.sort(function(a,b) { return parseFloat(a.locY) - parseFloat(b.locY) } );
 	//Clear Canvas
@@ -318,6 +321,18 @@ function getRandomInt(min, max) {
 }
 function getRandomArbitrary(min, max) {
   return Math.random() * (max - min) + min;
+}
+
+function resizeCanvas(){
+	if(window.height > window.width){
+		//portrait
+		stage.width = window.innerWidth;
+		stage.height = window.innerHeight;
+	} else {
+		//landscape
+		stage.width = window.innerWidth;
+		stage.height = window.innerHeight;
+	}
 }
 /*
       function getMousePos(canvas, evt) {
