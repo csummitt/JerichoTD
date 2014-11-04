@@ -409,9 +409,9 @@ function handleMove(evt) {
 	var touches = evt.changedTouches;
 	
 	
-	cameraLocX = cameraLocX -(startX - touches[0].screenX)
+	cameraLocX = cameraLocX +(startX - touches[0].screenX)
 	startX = touches[0].screenX;
-	cameraLocY = cameraLocY -(startY - touches[0].screenY)
+	cameraLocY = cameraLocY +(startY - touches[0].screenY)
 	startY = touches[0].screenY;
 	if(cameraLocX < 0){
 		cameraLocX = 0;
