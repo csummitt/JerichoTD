@@ -404,10 +404,10 @@ function handleMove(evt) {
 		cameraLocX = 0;
 	}
 	if(cameraLocX > 98*imgSize-cameraWidth){
-		cameraLocX = 98*imgSize+100;
+		cameraLocX = 98*imgSize-cameraWidth;
 	}
 	if(cameraLocY > 98*imgSize-cameraHeight){
-		cameraLocY = 98*imgSize+100;
+		cameraLocY = 98*imgSize-cameraHeight;
 	}
 	if(cameraLocY < 0){
 		cameraLocY = 0;
