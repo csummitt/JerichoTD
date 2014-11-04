@@ -245,6 +245,7 @@ function update()
 	ctx.font = '20pt Calibri';
 	ctx.fillStyle = 'red';
 	ctx.fillText("Camera X: " + cameraLocX + " Camera Y: " + cameraLocY,stage.width*0.1,stage.height*0.05);
+	ctx.fillText("Camera width: " + stage.width + " Camera Height: " + stage.height,stage.width*0.1,stage.height*0.05);
 	
 	
 	//Tower Movement
@@ -401,6 +402,12 @@ function handleMove(evt) {
 	startY = touches[0].screenY;
 	if(cameraLocX < 0){
 		cameraLocX = 0;
+	}
+	if(cameraLocX > 98*imgSize+100){
+		cameraLocX = 98*imgSize+100;
+	}
+	if(cameraLocY > 98*imgSize+100){
+		cameraLocY = 98*imgSize+100;
 	}
 	if(cameraLocY < 0){
 		cameraLocY = 0;
