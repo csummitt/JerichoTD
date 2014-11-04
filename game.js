@@ -255,25 +255,25 @@ function update()
 	//Creep Movement
 	for(var i = 0; i < Creeps.length; i++){
 		if(Creeps[i].dir == 0){
-			Creeps[i].locY = Creeps[i].locY - (Creeps[i].baseSpeed/(TIME_PER_FRAME*2))/3;
+			Creeps[i].locY = Creeps[i].locY - (Creeps[i].baseSpeed/(TIME_PER_FRAME));//*2))/3;
 			if(Creeps[i].locY <= getRandomArbitrary(5,8)*imgSize){
 				Creeps[i].dir = Creeps[i].dir + 1;
 				//console.log("Direction " + Creeps[i].dir);
 			}
 		} else if (Creeps[i].dir == 1){
-			Creeps[i].locX = Creeps[i].locX + (Creeps[i].baseSpeed/(TIME_PER_FRAME*2))/3;
+			Creeps[i].locX = Creeps[i].locX + (Creeps[i].baseSpeed/(TIME_PER_FRAME));//*2))/3;
 			if(Creeps[i].locX >= getRandomArbitrary(86,89)*imgSize){
 				Creeps[i].dir = Creeps[i].dir + 1;
 				//console.log("Direction " + Creeps[i].dir);
 			}
 		} else if (Creeps[i].dir == 2){
-			Creeps[i].locY = Creeps[i].locY + (Creeps[i].baseSpeed/(TIME_PER_FRAME*2))/3;
+			Creeps[i].locY = Creeps[i].locY + (Creeps[i].baseSpeed/(TIME_PER_FRAME));//*2))/3;
 			if(Creeps[i].locY >= getRandomArbitrary(86,89)*imgSize){
 				Creeps[i].dir = Creeps[i].dir + 1;
 				//console.log("Direction " + Creeps[i].dir);
 			}
 		} else {
-			Creeps[i].locX = Creeps[i].locX - (Creeps[i].baseSpeed/(TIME_PER_FRAME*2))/3;
+			Creeps[i].locX = Creeps[i].locX - (Creeps[i].baseSpeed/(TIME_PER_FRAME))//*2))/3;
 			if(Creeps[i].locX <= getRandomArbitrary(5,8)*imgSize){
 				Creeps[i].dir = 0;
 				//console.log("Direction " + Creeps[i].dir);
@@ -403,10 +403,10 @@ function handleMove(evt) {
 	if(cameraLocX < 0){
 		cameraLocX = 0;
 	}
-	if(cameraLocX > 98*imgSize+100){
+	if(cameraLocX > 98*imgSize-cameraWidth){
 		cameraLocX = 98*imgSize+100;
 	}
-	if(cameraLocY > 98*imgSize+100){
+	if(cameraLocY > 98*imgSize-cameraHeight){
 		cameraLocY = 98*imgSize+100;
 	}
 	if(cameraLocY < 0){
