@@ -348,6 +348,19 @@ function resizeCanvas(){
 		stage.width = window.innerWidth;
 		stage.height = window.innerHeight;
 	}
+	if(cameraLocX < 0){
+		cameraLocX = 0;
+	}
+	if(cameraLocX > 98*imgSize-cameraWidth){
+		cameraLocX = 98*imgSize-cameraWidth;
+	}
+	if(cameraLocY > 98*imgSize-cameraHeight){
+		cameraLocY = 98*imgSize-cameraHeight;
+	}
+	if(cameraLocY < 0){
+		cameraLocY = 0;
+	}
+	
 }
 /*
       function getMousePos(canvas, evt) {
