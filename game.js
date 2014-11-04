@@ -244,7 +244,7 @@ function update()
 	//Draw HUD
 	ctx.font = '20pt Calibri';
 	ctx.fillStyle = 'red';
-	ctx.fillText("Touch X: " + touchX + " Touch Y: " + touchY,stage.width*0.1,stage.height*0.05);
+	ctx.fillText("Camera X: " + cameraLocX + " Camera Y: " + cameraLocY,stage.width*0.1,stage.height*0.05);
 	
 	
 	//Tower Movement
@@ -393,8 +393,12 @@ function handleStart(evt) {
 function handleMove(evt) {
 	evt.preventDefault();
 	var touches = evt.changedTouches;
+	
+	
 	cameraLocX = cameraLocX -(startX - touches[0].screenX)
+	startX = touches[0].screenX;
 	cameraLocY = cameraLocY -(startY - touches[0].screenY)
+	startY = touches[0].screenY;
 	if(cameraLocX < 0){
 		cameraLocX = 0;
 	}
