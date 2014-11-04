@@ -8,8 +8,10 @@ var ctx = stage.getContext("2d");
 ctx.fillStyle = "grey";
 ctx.font = GAME_FONTS;
 
-var touchX = -5;
-var touchY = -5;
+var startX = -5;
+var startY = -5;
+var endX = -5;
+var endY = -5;
 
 window.addEventListener('resize', resizeCanvas, false);
 //---------------
@@ -369,8 +371,8 @@ function resizeCanvas(){
 function handleStart(evt) {
 	evt.preventDefault();
 	console.log("touchstart.");
-	touchX = evt.changedTouches[0].pageX;
-	touchY = evt.changedTouches[0].pageY;
+	startX = evt.changedTouches[0].pageX;
+	startY = evt.changedTouches[0].pageY;
 	/* var touches = evt.changedTouches;
 	//ctx.fillStyle = "black";
 	//ctx.fillRect(0, 0, stage.width, stage.height);	
@@ -389,31 +391,16 @@ function handleStart(evt) {
 }
 
 function handleMove(evt) {
-  evt.preventDefault();
-  var touches = evt.changedTouches;
-
-  for (var i=0; i < touches.length; i++) {
-    var color = colorForTouch(touches[i]);
-    var idx = ongoingTouchIndexById(touches[i].identifier);
-
-    if(idx >= 0) {
-      log("continuing touch "+idx);
-     // ctx.beginPath();
-     // log("ctx.moveTo("+ongoingTouches[idx].pageX+", "+ongoingTouches[idx].pageY+");");
-      // ctx.moveTo(ongoingTouches[idx].pageX, ongoingTouches[idx].pageY);
-      // log("ctx.lineTo("+touches[i].pageX+", "+touches[i].pageY+");");
-      // ctx.lineTo(touches[i].pageX, touches[i].pageY);
-      // ctx.lineWidth = 4;
-      // ctx.strokeStyle = color;
-      // ctx.stroke();
-	  touchX = touches[i].pageX;
-	  touchY = touches[i].pageY;
-      ongoingTouches.splice(idx, 1, copyTouch(touches[i]));  // swap in the new touch record
-      log(".");
-    } else {
-      log("can't figure out which touch to continue");
-    }
-  }
+	evt.preventDefault();
+	var touches = evt.changedTouches;
+	cameraLocX = cameraLocX -(startX - touches[0].screenX)
+	cameraLocY = cameraLocY -(startY - touches[0].screenY)
+	if(cameraLocX < 0){
+		cameraLocX = 0;
+	}
+	if(cameraLocY < 0){
+		cameraLocY = 0;
+	}
 }
 
 function handleEnd(evt) {
