@@ -70,14 +70,15 @@ function preloading()
 	stage.addEventListener('touchleave', handleEnd, false);
 	stage.addEventListener('touchmove', handleMove, false);
 	
-	
+	var buildArea = (GRIDWIDTH-spacing*6)/2;
+	var spaceing = 96/imgSize;
 	//Create Grid
-	for(var r = 0; r < 98; r++){
-		for(var c = 0; c < 98; c++){
-			if(r<6||r>91||(c<6 && r > 11)||(c>91 && r<86)){
+	for(var r = 0; r < GRID_HIEGHT; r++){
+		for(var c = 0; c < GRID_WIDTH; c++){
+			if(r<spacing||r>GRID_HEIGHT-spacing||(c<spacing && r > spacing*2)||(c>GRID_WIDTH-spacing*2 && r<GRID_HEIGHT-spacing*2)){
 				Grid[r*98+c] = new Tile(false,false,c,r,imgSize);
 				Grid[r*98+c].img.src = PATH_TILE_UNBUILD;
-			} else if ((r<12 && c < 92)||(c>5 && r > 85) ||c < 12||c>85||(c>45 && c<52)||(r>45 && r < 52)){
+			} else if ((r<spacing*2 && c < GRID_WIDTH-spacing*2)||(c>spacing && r > GRID_HEIGHT-spacing*2) ||c < spacing*2||c>GRID_WIDTH-spacing*2||(c>buildArea+spacing*2 && c<buildArea+spacing*3)||(r>buildArea+spacing*2 && r < buildArea+spacing*3)){
 				Grid[r*98+c] = new Tile(true,false,c,r,imgSize);
 				Grid[r*98+c].img.src = PATH_TILE_PATH;
 			} else {
