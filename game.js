@@ -13,6 +13,11 @@ var startY = -5;
 var endX = -5;
 var endY = -5;
 
+//Test Variables
+updateCount = 0;
+updateTime = 0;
+updateTimeTotal = 0;
+
 window.addEventListener('resize', resizeCanvas, false);
 //---------------
 //Preloading ...
@@ -194,6 +199,7 @@ function preloading()
 	        // }//end of black dragon
 
 		waveSetup();
+		updateTime = new Date().getTime();
 		gameloop = setInterval(update, TIME_PER_FRAME);	
 }
 
@@ -209,6 +215,11 @@ cameraHeight = stage.height;//540;
 //
 function update()
 {	
+	updateTime = updateTime - new Date().getTime();
+	updateTimeTotal = updateTimeTotal + updateTime;
+	updateTime = new Date().getTime();
+	updateCount = updateCount + 1;
+	
 	cameraWidth = stage.width;//960;
 	cameraHeight = stage.height;//540;
 	//Re-Order Images so the one on-top should be on-top
@@ -275,8 +286,9 @@ function update()
 	
 	//Draw HUD
 	ctx.font = '20pt Calibri';
-	ctx.fillStyle = 'red';
+	ctx.fillStyle = 'yellow';
 	//ctx.fillText("Camera X: " + cameraLocX + " Camera Y: " + cameraLocY,stage.width*0.1,stage.height*0.05);
+	ctx.fillText("Average Update Time: " + updateTimeTotal/updateCount);
 	//ctx.fillText("Camera width: " + stage.width + " Camera Height: " + stage.height,stage.width*0.1,stage.height*0.15);
 	
 	
