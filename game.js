@@ -59,6 +59,9 @@ var fdragon = [];
 var gdragon = [];
 var bdragon = [];
 
+var spacing = 3;
+var buildArea = (GRID_WIDTH-spacing*6)/2;
+
 var ongoingTouches = new Array();
 function preloading()
 {	
@@ -70,24 +73,44 @@ function preloading()
 	stage.addEventListener('touchleave', handleEnd, false);
 	stage.addEventListener('touchmove', handleMove, false);
 	
-	var buildArea = (GRIDWIDTH-spacing*6)/2;
-	var spaceing = 96/imgSize;
+	/****************************************************************/
+	/************************* GRID CREATION ************************/
+	/****************************************************************/
+	
+	
+	// console.log("Grid is " + GRID_WIDTH +" by "+ GRID_HEIGHT +" and Image Size is: " + imgSize);
+	// console.log("spacing: " + spacing);
+	// console.log("GRID_HEIGHT - spacing: " + (GRID_HEIGHT-spacing));
+	// console.log("spacing*2-1: " +(spacing*2-1));
+	// console.log("GRID_WIDTH-spacing*2: " + (GRID_WIDTH-spacing*2));
+	// console.log("GRID_HEIGHT-spacing*2: " + (GRID_HEIGHT-spacing*2));
+	// console.log("buildArea+spacing*2: " + (buildArea+spacing*2));
+	// console.log("buildArea+spacing*3+1: " +( buildArea+spacing*3+1));
 	//Create Grid
-	for(var r = 0; r < GRID_HIEGHT; r++){
+	for(var r = 0; r < GRID_HEIGHT; r++){
 		for(var c = 0; c < GRID_WIDTH; c++){
-			if(r<spacing||r>GRID_HEIGHT-spacing||(c<spacing && r > spacing*2)||(c>GRID_WIDTH-spacing*2 && r<GRID_HEIGHT-spacing*2)){
-				Grid[r*98+c] = new Tile(false,false,c,r,imgSize);
-				Grid[r*98+c].img.src = PATH_TILE_UNBUILD;
-			} else if ((r<spacing*2 && c < GRID_WIDTH-spacing*2)||(c>spacing && r > GRID_HEIGHT-spacing*2) ||c < spacing*2||c>GRID_WIDTH-spacing*2||(c>buildArea+spacing*2 && c<buildArea+spacing*3)||(r>buildArea+spacing*2 && r < buildArea+spacing*3)){
-				Grid[r*98+c] = new Tile(true,false,c,r,imgSize);
-				Grid[r*98+c].img.src = PATH_TILE_PATH;
+			if(r<spacing||r>GRID_HEIGHT-(spacing*2-1)||(c<spacing && r > spacing*2-1)||(c>GRID_WIDTH-(spacing*2-1) && r<GRID_HEIGHT-(spacing*3-2))){
+				//console.log("Creating Grid["+(r*GRID_HEIGHT+c)+"]!");
+				Grid[r*GRID_HEIGHT+c] = new Tile(false,false,c,r,imgSize);
+				Grid[r*GRID_HEIGHT+c].img.src = PATH_TILE_UNBUILD;
+			} else if ((r<spacing*2 && c < GRID_WIDTH-spacing*2)||(c>spacing && r > GRID_HEIGHT-(spacing*3-1)) ||c < spacing*2||c>GRID_WIDTH-(spacing*3-1)||(c>buildArea+spacing*2 && c<buildArea+spacing*3+1)||(r>buildArea+spacing*2 && r < buildArea+spacing*3+1)){
+				//console.log("Creating Grid["+(r*GRID_HEIGHT+c)+"]!");
+				Grid[r*GRID_HEIGHT+c] = new Tile(true,false,c,r,imgSize);
+				Grid[r*GRID_HEIGHT+c].img.src = PATH_TILE_PATH;
 			} else {
-				Grid[r*98+c] = new Tile(false,true,c,r,imgSize);
-				Grid[r*98+c].img.src = PATH_TILE_GRASS;
+				//console.log("Creating Grid["+(r*GRID_HEIGHT+c)+"]!");
+				Grid[r*GRID_HEIGHT+c] = new Tile(false,true,c,r,imgSize);
+				Grid[r*GRID_HEIGHT+c].img.src = PATH_TILE_GRASS;
 			}
 		}
 	}
 	
+	/****************************************************************/
+	/********************* END GRID CREATION ************************/
+	/****************************************************************/
+	
+	
+	//sleepFor(10000);
 	//Setup Creeps to use
 		for(var i = 0; i < 32;i++){
 			tempImg = new Image()
@@ -105,70 +128,70 @@ function preloading()
 				airdragon[i] = tempImg;
 			}
 		} //end of air dragon
-		for(var i = 0; i < 32;i++){
-	            tempImg = new Image()
-	            if(i < 8){
-	                tempImg.src = "game/assets/img/water-dragon/walking/water-walking-n000" + i + ".png";
-	                wdragon[i] = tempImg;
-	            } else if(i < 16){
-	                tempImg.src = "game/assets/img/water-dragon/walking/water-walking-e000" + (i-8) + ".png"
-	                wdragon[i] = tempImg;
-	            } else if(i < 24){
-	                tempImg.src = "game/assets/img/water-dragon/walking/water-walking-s000" + (i-16) + ".png"
-	                wdragon[i] = tempImg;
-	            } else {
-	                tempImg.src = "game/assets/img/water-dragon/walking/water-walking-w000" + (i-24) + ".png"
-	                wdragon[i] = tempImg;
-	            }
-	        }//end of water dragon
-	        for(var i = 0; i < 32;i++){
-	            tempImg = new Image()
-	            if(i < 8){
-	                tempImg.src = "game/assets/img/fire-dragon/walking/fire-walking-n000" + i + ".png";
-	                fdragon[i] = tempImg;
-	            } else if(i < 16){
-	                tempImg.src = "game/assets/img/fire-dragon/walking/fire-walking-e000" + (i-8) + ".png"
-	                fdragon[i] = tempImg;
-	            } else if(i < 24){
-	                tempImg.src = "game/assets/img/fire-dragon/walking/fire-walking-s000" + (i-16) + ".png"
-	                fdragon[i] = tempImg;
-	            } else {
-	                tempImg.src = "game/assets/img/fire-dragon/walking/fire-walking-w000" + (i-24) + ".png"
-	                fdragon[i] = tempImg;
-	            }
-	        }//end of fire dragon
-	        for(var i = 0; i < 32;i++){
-	            tempImg = new Image()
-	            if(i < 8){
-	                tempImg.src = "game/assets/img/gold-dragon/walking/gold-walking-n000" + i + ".png";
-	                gdragon[i] = tempImg;
-	            } else if(i < 16){
-	                tempImg.src = "game/assets/img/gold-dragon/walking/gold-walking-e000" + (i-8) + ".png"
-	                gdragon[i] = tempImg;
-	            } else if(i < 24){
-	                tempImg.src = "game/assets/img/gold-dragon/walking/gold-walking-s000" + (i-16) + ".png"
-	                gdragon[i] = tempImg;
-	            } else {
-	                tempImg.src = "game/assets/img/gold-dragon/walking/gold-walking-w000" + (i-24) + ".png"
-	                gdragon[i] = tempImg;
-	            }
-	        }//end of gold dragon
-	        for(var i = 0; i < 32;i++){
-	            tempImg = new Image()
-	            if(i < 8){
-	                tempImg.src = "game/assets/img/black-dragon/walking/black-walking-n000" + i + ".png";
-	                bdragon[i] = tempImg;
-	            } else if(i < 16){
-	                tempImg.src = "game/assets/img/black-dragon/walking/black-walking-e000" + (i-8) + ".png"
-	                bdragon[i] = tempImg;
-	            } else if(i < 24){
-	                tempImg.src = "game/assets/img/black-dragon/walking/black-walking-s000" + (i-16) + ".png"
-	                bdragon[i] = tempImg;
-	            } else {
-	                tempImg.src = "game/assets/img/black-dragon/walking/black-walking-w000" + (i-24) + ".png"
-	                bdragon[i] = tempImg;
-	            }
-	        }//end of black dragon
+		// for(var i = 0; i < 32;i++){
+	            // tempImg = new Image()
+	            // if(i < 8){
+	                // tempImg.src = "game/assets/img/water-dragon/walking/water-walking-n000" + i + ".png";
+	                // wdragon[i] = tempImg;
+	            // } else if(i < 16){
+	                // tempImg.src = "game/assets/img/water-dragon/walking/water-walking-e000" + (i-8) + ".png"
+	                // wdragon[i] = tempImg;
+	            // } else if(i < 24){
+	                // tempImg.src = "game/assets/img/water-dragon/walking/water-walking-s000" + (i-16) + ".png"
+	                // wdragon[i] = tempImg;
+	            // } else {
+	                // tempImg.src = "game/assets/img/water-dragon/walking/water-walking-w000" + (i-24) + ".png"
+	                // wdragon[i] = tempImg;
+	            // }
+	        // }//end of water dragon
+	        // for(var i = 0; i < 32;i++){
+	            // tempImg = new Image()
+	            // if(i < 8){
+	                // tempImg.src = "game/assets/img/fire-dragon/walking/fire-walking-n000" + i + ".png";
+	                // fdragon[i] = tempImg;
+	            // } else if(i < 16){
+	                // tempImg.src = "game/assets/img/fire-dragon/walking/fire-walking-e000" + (i-8) + ".png"
+	                // fdragon[i] = tempImg;
+	            // } else if(i < 24){
+	                // tempImg.src = "game/assets/img/fire-dragon/walking/fire-walking-s000" + (i-16) + ".png"
+	                // fdragon[i] = tempImg;
+	            // } else {
+	                // tempImg.src = "game/assets/img/fire-dragon/walking/fire-walking-w000" + (i-24) + ".png"
+	                // fdragon[i] = tempImg;
+	            // }
+	        // }//end of fire dragon
+	        // for(var i = 0; i < 32;i++){
+	            // tempImg = new Image()
+	            // if(i < 8){
+	                // tempImg.src = "game/assets/img/gold-dragon/walking/gold-walking-n000" + i + ".png";
+	                // gdragon[i] = tempImg;
+	            // } else if(i < 16){
+	                // tempImg.src = "game/assets/img/gold-dragon/walking/gold-walking-e000" + (i-8) + ".png"
+	                // gdragon[i] = tempImg;
+	            // } else if(i < 24){
+	                // tempImg.src = "game/assets/img/gold-dragon/walking/gold-walking-s000" + (i-16) + ".png"
+	                // gdragon[i] = tempImg;
+	            // } else {
+	                // tempImg.src = "game/assets/img/gold-dragon/walking/gold-walking-w000" + (i-24) + ".png"
+	                // gdragon[i] = tempImg;
+	            // }
+	        // }//end of gold dragon
+	        // for(var i = 0; i < 32;i++){
+	            // tempImg = new Image()
+	            // if(i < 8){
+	                // tempImg.src = "game/assets/img/black-dragon/walking/black-walking-n000" + i + ".png";
+	                // bdragon[i] = tempImg;
+	            // } else if(i < 16){
+	                // tempImg.src = "game/assets/img/black-dragon/walking/black-walking-e000" + (i-8) + ".png"
+	                // bdragon[i] = tempImg;
+	            // } else if(i < 24){
+	                // tempImg.src = "game/assets/img/black-dragon/walking/black-walking-s000" + (i-16) + ".png"
+	                // bdragon[i] = tempImg;
+	            // } else {
+	                // tempImg.src = "game/assets/img/black-dragon/walking/black-walking-w000" + (i-24) + ".png"
+	                // bdragon[i] = tempImg;
+	            // }
+	        // }//end of black dragon
 
 		waveSetup();
 		gameloop = setInterval(update, TIME_PER_FRAME);	
@@ -201,6 +224,14 @@ function update()
 				if(Grid[i].locY+Grid[i].size >= cameraLocY){
 					if(Grid[i].locY <= cameraLocY + cameraHeight){
 						ctx.drawImage(Grid[i].img,Grid[i].locX-cameraLocX,Grid[i].locY-cameraLocY,imgSize,imgSize);
+						//console.log(Grid[i].img.src + "");
+						// if(Grid[i].buildable){
+							// ctx.beginPath();
+							// ctx.rect(Grid[i].locX,Grid[i].locY,imgSize,imgSize);
+							// ctx.lineWidth = 2;
+							// ctx.strokeStyle = 'black';
+							// ctx.stroke();
+						// }
 						//ctx.font = '10pt Calibri';
 						//ctx.fillStyle = 'red';
 						//ctx.fillText(""+i, Grid[i].locX-cameraLocX+1,Grid[i].locY-cameraLocY+imgSize/2); //Test To see Grid Number
@@ -231,7 +262,7 @@ function update()
 			if(Creeps[i].locX <= cameraLocX + cameraWidth){
 				if(Creeps[i].locY+(4*imgSize) >= cameraLocY){
 					if(Creeps[i].locY <= cameraLocY + cameraHeight){
-						ctx.drawImage(Creeps[i].imgs[Creeps[i].dir*8+Creeps[i].currentImg],Creeps[i].locX-cameraLocX,Creeps[i].locY-cameraLocY,4*imgSize,4*imgSize);
+						ctx.drawImage(Creeps[i].imgs[Creeps[i].dir*8+Creeps[i].currentImg],Creeps[i].locX-cameraLocX,Creeps[i].locY-cameraLocY,64,64);
 						//ctx.drawImage(Grid[i].img                  ,Grid  [i].locX-cameraLocX  ,Grid[i].locY-cameraLocY,imgSize,imgSize);
 						//ctx.strokeText(""+i, Grid[i].locX-cameraLocX+1,Grid[i].locY-cameraLocY+imgSize/2); //Test To see Grid Number
 					}
@@ -245,8 +276,8 @@ function update()
 	//Draw HUD
 	ctx.font = '20pt Calibri';
 	ctx.fillStyle = 'red';
-	ctx.fillText("Camera X: " + cameraLocX + " Camera Y: " + cameraLocY,stage.width*0.1,stage.height*0.05);
-	ctx.fillText("Camera width: " + stage.width + " Camera Height: " + stage.height,stage.width*0.1,stage.height*0.15);
+	//ctx.fillText("Camera X: " + cameraLocX + " Camera Y: " + cameraLocY,stage.width*0.1,stage.height*0.05);
+	//ctx.fillText("Camera width: " + stage.width + " Camera Height: " + stage.height,stage.width*0.1,stage.height*0.15);
 	
 	
 	//Tower Movement
@@ -257,25 +288,25 @@ function update()
 	for(var i = 0; i < Creeps.length; i++){
 		if(Creeps[i].dir == 0){
 			Creeps[i].locY = Creeps[i].locY - (Creeps[i].baseSpeed/(TIME_PER_FRAME));//*2))/3;
-			if(Creeps[i].locY <= getRandomArbitrary(5,8)*imgSize){
+			if(Creeps[i].locY <= getRandomArbitrary(spacing,spacing+1)*imgSize){
 				Creeps[i].dir = Creeps[i].dir + 1;
 				//console.log("Direction " + Creeps[i].dir);
 			}
 		} else if (Creeps[i].dir == 1){
 			Creeps[i].locX = Creeps[i].locX + (Creeps[i].baseSpeed/(TIME_PER_FRAME));//*2))/3;
-			if(Creeps[i].locX >= getRandomArbitrary(86,89)*imgSize){
+			if(Creeps[i].locX >= getRandomArbitrary(GRID_HEIGHT-(spacing*2+1),GRID_HEIGHT-(spacing*2))*imgSize){
 				Creeps[i].dir = Creeps[i].dir + 1;
 				//console.log("Direction " + Creeps[i].dir);
 			}
 		} else if (Creeps[i].dir == 2){
 			Creeps[i].locY = Creeps[i].locY + (Creeps[i].baseSpeed/(TIME_PER_FRAME));//*2))/3;
-			if(Creeps[i].locY >= getRandomArbitrary(86,89)*imgSize){
+			if(Creeps[i].locY >= getRandomArbitrary(GRID_HEIGHT-(spacing*2+1),GRID_HEIGHT-(spacing*2))*imgSize){
 				Creeps[i].dir = Creeps[i].dir + 1;
 				//console.log("Direction " + Creeps[i].dir);
 			}
 		} else {
 			Creeps[i].locX = Creeps[i].locX - (Creeps[i].baseSpeed/(TIME_PER_FRAME))//*2))/3;
-			if(Creeps[i].locX <= getRandomArbitrary(5,8)*imgSize){
+			if(Creeps[i].locX <= getRandomArbitrary(spacing,spacing+1)*imgSize){
 				Creeps[i].dir = 0;
 				//console.log("Direction " + Creeps[i].dir);
 			}
@@ -301,28 +332,29 @@ function waveSetup(){
 	clearInterval(timerspawnDelay);
 	clearInterval(timerwaveSpawner);
 	wave = wave + 1;
+	
 	timerwaveSpawner = setTimeout(waveSpawner, 15000);
 }
-
+var modifierTestArray = [];
 function waveSpawner()
 {
 	console.log("In Wave " + wave + " Spawner");
 	clearInterval(waveSetup);
 	timerwaveSetup = setTimeout(waveSetup,20000);
-	timerspawnDelay = setInterval(spawnCreeps,spawnDelay*2);
+	timerspawnDelay = setInterval(spawnCreeps,spawnDelay);
 	
 
 
 
 }
-var modifierTestArray = [];
+//var modifierTestArray = [];
 function spawnCreeps(){
 	console.log("Spawning Creeps");
-	tempCreep = new Creep(wave,"Basic",imgSize*getRandomArbitrary(0,1),imgSize*getRandomArbitrary(6.5,7.5),modifierTestArray,airdragon);
+	tempCreep = new Creep(wave,"Basic",imgSize*getRandomArbitrary(0,1),imgSize*getRandomArbitrary(spacing,spacing+1),modifierTestArray,airdragon);
 	tempCreep.dir = 1;
 	tempCreep.currentImg = getRandomInt(0,7);
 	Creeps.push(tempCreep);
-	tempCreep = new Creep(wave,"Basic",imgSize*getRandomArbitrary(95,96),imgSize*getRandomArbitrary(86.5,87.5),modifierTestArray,airdragon);
+	tempCreep = new Creep(wave,"Basic",imgSize*getRandomArbitrary(GRID_WIDTH-2,GRID_WIDTH-1),imgSize*getRandomArbitrary(GRID_HEIGHT-(spacing*2+1),GRID_HEIGHT-(spacing*2)),modifierTestArray,airdragon);
 	tempCreep.dir = 3;
 	tempCreep.currentImg = getRandomInt(0,7);
 	Creeps.push(tempCreep);
@@ -352,11 +384,11 @@ function resizeCanvas(){
 	if(cameraLocX < 0){
 		cameraLocX = 0;
 	}
-	if(cameraLocX > 98*imgSize-cameraWidth){
-		cameraLocX = 98*imgSize-cameraWidth;
+	if(cameraLocX > GRID_WIDTH*imgSize-cameraWidth){
+		cameraLocX = GRID_WIDTH*imgSize-cameraWidth;
 	}
-	if(cameraLocY > 98*imgSize-cameraHeight){
-		cameraLocY = 98*imgSize-cameraHeight;
+	if(cameraLocY > GRID_HEIGHT*imgSize-cameraHeight){
+		cameraLocY = GRID_HEIGHT*imgSize-cameraHeight;
 	}
 	if(cameraLocY < 0){
 		cameraLocY = 0;
@@ -417,11 +449,11 @@ function handleMove(evt) {
 	if(cameraLocX < 0){
 		cameraLocX = 0;
 	}
-	if(cameraLocX > 98*imgSize-cameraWidth){
-		cameraLocX = 98*imgSize-cameraWidth;
+	if(cameraLocX > GRID_WIDTH*imgSize-cameraWidth){
+		cameraLocX = GRID_WIDTH*imgSize-cameraWidth;
 	}
-	if(cameraLocY > 98*imgSize-cameraHeight){
-		cameraLocY = 98*imgSize-cameraHeight;
+	if(cameraLocY > GRID_HEIGHT*imgSize-cameraHeight){
+		cameraLocY = GRID_HEIGHT*imgSize-cameraHeight;
 	}
 	if(cameraLocY < 0){
 		cameraLocY = 0;
@@ -491,3 +523,7 @@ function ongoingTouchIndexById(idToFind) {
   return -1;    // not found
 }
 	
+function sleepFor( sleepDuration ){
+    var now = new Date().getTime();
+    while(new Date().getTime() < now + sleepDuration){ /* do nothing */ } 
+}
