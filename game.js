@@ -288,7 +288,7 @@ function update()
 	ctx.font = '20pt Calibri';
 	ctx.fillStyle = 'yellow';
 	//ctx.fillText("Camera X: " + cameraLocX + " Camera Y: " + cameraLocY,stage.width*0.1,stage.height*0.05);
-	ctx.fillText("Average Update Time: " + updateTimeTotal/updateCount);
+	ctx.fillText("Average Update Time: " + (-1)*updateTimeTotal/updateCount,stage.width*0.1,stage.height*0.05);
 	//ctx.fillText("Camera width: " + stage.width + " Camera Height: " + stage.height,stage.width*0.1,stage.height*0.15);
 	
 	
