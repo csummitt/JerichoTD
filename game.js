@@ -1,3 +1,51 @@
+/***************************************************/
+/***************** CONSTANTS ***********************/
+/***************************************************/
+//------------
+//System Values
+//------------
+var STAGE_WIDTH = 960;
+var STAGE_HEIGHT = 540;
+var TIME_PER_FRAME = 20; //this equates to 30 fps
+var GAME_FONTS = "bold 20px sans-serif";
+var imgSize = 32;
+var GRID_WIDTH = 1920/imgSize;
+var GRID_HEIGHT = 1920/imgSize;
+
+//Tile Images
+var PATH_TILE_GRASS = "game/assets/img/grass.jpg";
+var PATH_TILE_UNBUILD = "game/assets/img/unbuildgrass.jpg";
+var PATH_TILE_PATH = "game/assets/img/path.jpg";
+
+
+//Tower Images
+var PATH_TOWER_BASIC = "";
+var PATH_TOWER_RAPID = "";
+var PATH_TOWER_SPLASH = "";
+var PATH_TOWER_MULTI = "";
+
+//Creep Images
+var PATH_CREEP_BASIC = "";
+var PATH_CREEP_ARMOR = "";
+var PATH_CREEP_FAST = "";
+var PATH_CREEP_SPLIT = "";
+var PATH_CREEP_BOSS = "";
+
+
+
+//Pre-load stuff
+var TEXT_PRELOADING = "Loading ...", 
+	TEXT_PRELOADING_X = 300, 
+	TEXT_PRELOADING_Y = 300;
+
+/***************************************************/
+/***************************************************/
+/***************************************************/
+
+/***************************************************/
+/***************** VARIABLES ***********************/
+/***************************************************/
+
 //------------
 //System Vars
 //------------
@@ -18,33 +66,12 @@ updateCount = 0;
 updateTime = 0;
 updateTimeTotal = 0;
 
-window.addEventListener('resize', resizeCanvas, false);
-//---------------
-//Preloading ...
-//---------------
 
-//Setup Tile
-var Tile = function(path,build,x,y,size){
-		this.pathable = path;
-		this.buildable = build;
-		this.size = size;
-		this.locX = x*size;
-		this.locY = y*size;
-		this.img = new Image();
-		this.spawn = false;
-	}
-	
 
-function setAssetReady()
-{
-	this.ready = true;
-}
+/***************************************************/
+/***************************************************/
+/***************************************************/
 
-//Display Preloading
-ctx.fillRect(0,0,stage.width,stage.height);
-ctx.fillStyle = "#000";
-ctx.fillText(TEXT_PRELOADING, TEXT_PRELOADING_X, TEXT_PRELOADING_Y);
-//Setup Timers
 var preloader = setInterval(preloading, TIME_PER_FRAME);
 var gameloop;
 var timerwaveSpawner;
@@ -68,6 +95,111 @@ var spacing = 3;
 var buildArea = (GRID_WIDTH-spacing*6)/2;
 
 var ongoingTouches = new Array();
+
+
+/***************************************************/
+/***************************************************/
+/***************************************************/
+
+
+/***************************************************/
+/******************* OBJECTS ***********************/
+/***************************************************/
+
+var Tile = function(path,build,x,y,size){
+		this.pathable = path;
+		this.buildable = build;
+		this.size = size;
+		this.locX = x*size;
+		this.locY = y*size;
+		this.img = new Image();
+		this.spawn = false;
+	}
+
+
+
+/******************CREEPS*************************/	
+var Creep = function(wave,type,locX,locY,modifiers,imgs){
+	//Location Variables
+	this.locX = locX;
+	this.locY = locY;
+	
+	
+	//Stat Variables
+	this.baseHP = (wave*25)+((25*(wave-1))/8) ^2;
+	this.baseSpeed = 100;
+	this.baseArmor = Math.floor(wave/5);
+	
+	
+	switch (type) {
+		case "Armor":
+			this.HP = this.baseHP * 1.1;
+			this.Armor = (this.baseArmor + 1) * 2;
+			this.baseSpeed = this.baseSpeed * 0.9;
+		case "Fast":
+			this.HP = this.baseHP * 0.8;
+			this.Armor = this.baseArmor;
+			this.baseSpeed = this.baseSpeed * 1.3;
+		case "Split":
+			this.HP = this.baseHP * 1.05;
+			this.Armor = this.baseArmor;
+			this.baseSpeed = this.baseSpeed * 0.95;
+		case "Mob":
+			this.HP = this.baseHP * 0.75;
+			this.Armor = this.baseArmor;
+			this.baseSpeed = this.baseSpeed;
+		case "Boss":
+			this.HP = this.baseHP * 1.5;
+			this.Armor = (this.baseArmor + 5) * 1.75;
+			this.baseSpeed = this.baseSpeed;
+		default:
+			this.HP = this.baseHP;
+			this.Armor = this.baseArmor;
+			this.baseSpeed = this.baseSpeed;
+	}
+	
+	
+	//Image Variables
+	this.dir = 0;
+	this.imgs = imgs;
+	this.imgSpeed = 3;
+	this.currentImg = 0;
+	
+}	
+
+
+
+/***************************************************/
+/***************************************************/
+/***************************************************/
+
+
+
+
+/***************************************************/
+/******************* PRELOAD ***********************/
+/***************************************************/
+
+//---------------
+//Preloading ...
+//---------------
+
+//Setup Tile
+
+	
+
+function setAssetReady()
+{
+	this.ready = true;
+}
+
+window.addEventListener('resize', resizeCanvas, false);
+//Display Preloading
+ctx.fillRect(0,0,stage.width,stage.height);
+ctx.fillStyle = "#000";
+ctx.fillText(TEXT_PRELOADING, TEXT_PRELOADING_X, TEXT_PRELOADING_Y);
+//Setup Timers
+
 function preloading()
 {	
 	clearInterval(preloader);
@@ -202,6 +334,12 @@ function preloading()
 		updateTime = new Date().getTime();
 		gameloop = setInterval(update, TIME_PER_FRAME);	
 }
+
+
+/***************************************************/
+/***************************************************/
+/***************************************************/
+
 
 //------------
 //Game Loop
