@@ -8,7 +8,7 @@ var STAGE_WIDTH = 960;
 var STAGE_HEIGHT = 540;
 var TIME_PER_FRAME = 20; //this equates to 30 fps
 var GAME_FONTS = "bold 20px sans-serif";
-var imgSize = 32;
+var imgSize = 64;
 var GRID_WIDTH = 1920/imgSize;
 var GRID_HEIGHT = 1920/imgSize;
 
