@@ -91,7 +91,7 @@ var fdragon = [];
 var gdragon = [];
 var bdragon = [];
 
-var spacing = 3;
+var spacing = 2;
 var buildArea = (GRID_WIDTH-spacing*6)/2;
 
 var ongoingTouches = new Array();
@@ -444,13 +444,13 @@ function update()
 			}
 		} else if (Creeps[i].dir == 1){
 			Creeps[i].locX = Creeps[i].locX + (Creeps[i].baseSpeed/(TIME_PER_FRAME));//*2))/3;
-			if(Creeps[i].locX >= getRandomArbitrary(GRID_HEIGHT-(spacing*2+1),GRID_HEIGHT-(spacing*2))*imgSize){
+			if(Creeps[i].locX >= getRandomArbitrary(GRID_HEIGHT-(spacing*2),GRID_HEIGHT-(spacing*2-1))*imgSize){
 				Creeps[i].dir = Creeps[i].dir + 1;
 				//console.log("Direction " + Creeps[i].dir);
 			}
 		} else if (Creeps[i].dir == 2){
 			Creeps[i].locY = Creeps[i].locY + (Creeps[i].baseSpeed/(TIME_PER_FRAME));//*2))/3;
-			if(Creeps[i].locY >= getRandomArbitrary(GRID_HEIGHT-(spacing*2+1),GRID_HEIGHT-(spacing*2))*imgSize){
+			if(Creeps[i].locY >= getRandomArbitrary(GRID_HEIGHT-(spacing*2),GRID_HEIGHT-(spacing*2-1))*imgSize){
 				Creeps[i].dir = Creeps[i].dir + 1;
 				//console.log("Direction " + Creeps[i].dir);
 			}
