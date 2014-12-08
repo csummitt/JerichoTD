@@ -31,8 +31,17 @@ var PATH_CREEP_FAST = "";
 var PATH_CREEP_SPLIT = "";
 var PATH_CREEP_BOSS = "";
 
+//Purchase Iages
+var PATH_HEXEGON = "game/assets/img/hexagon-small.png";
+var PATH_GREEN = "game/assets/img/GreenPurchase.png";
+var PATH_CANCEL = "game/assets/img/cancel.png";
 
-
+var heximg = new Image();
+heximg.src = PATH_HEXEGON;
+var greenimg = new Image();
+greenimg.src = PATH_GREEN;
+var canimg = new Image();
+canimg.src = PATH_CANCEL; 
 //Pre-load stuff
 var TEXT_PRELOADING = "Loading ...", 
 	TEXT_PRELOADING_X = 300, 
@@ -65,7 +74,8 @@ var endY = -5;
 updateCount = 0;
 updateTime = 0;
 updateTimeTotal = 0;
-
+var mouseIsDown = false;
+var mouseMoved = false;
 
 
 /***************************************************/
@@ -80,6 +90,7 @@ var timerwaveSetup;
 var spawnDelay = 500;
 var waveLength;
 var wave = 0;
+var selectedTile = -1;
 
 var Grid = [];
 var Towers = [];
@@ -91,11 +102,15 @@ var fdragon = [];
 var gdragon = [];
 var bdragon = [];
 
+
+var greenLaserSprite = [];
+
+
 var spacing = 2;
 var buildArea = (GRID_WIDTH-spacing*6)/2;
 
 var ongoingTouches = new Array();
-
+var purchasing = false;
 
 /***************************************************/
 /***************************************************/
@@ -114,6 +129,7 @@ var Tile = function(path,build,x,y,size){
 		this.locY = y*size;
 		this.img = new Image();
 		this.spawn = false;
+		this.tower = -1;
 	}
 
 
@@ -167,7 +183,66 @@ var Creep = function(wave,type,locX,locY,modifiers,imgs){
 	
 }	
 
-
+/******************Towers*************************/	
+var Tower = function(type,locX,locY){
+	//Location Variables
+	this.locX = locX;
+	this.locY = locY;
+	
+	
+	//Stat Variables
+	this.baseDMG = 000;
+	this.baseAS = 10000000;
+	this.baseRange = 0;
+	this.level = 1;
+	this.target = -1;
+	
+	switch (type) {
+		case "green":
+			this.imgs = greenLaserSprite;
+			this.baseDMG = 10;
+			this.baseAS = 25; //20 ms per frame aka 50 * 20 = 1 second
+			this.baseRange =600;
+			this.maxImage = 32;
+		case "red":
+			this.imgs = greenLaserSprite;
+			this.baseDMG = 10;
+			this.baseAS = 25; //20 ms per frame aka 50 * 20 = 1 second
+			this.baseRange =600;
+			this.maxImage = 32;
+		case "blue":
+			this.imgs = greenLaserSprite;
+			this.baseDMG = 10;
+			this.baseAS = 25; //20 ms per frame aka 50 * 20 = 1 second
+			this.baseRange =600;
+			this.maxImage = 32;
+		case "yellow":
+			this.imgs = greenLaserSprite;
+			this.baseDMG = 10;
+			this.baseAS = 25; //20 ms per frame aka 50 * 20 = 1 second
+			this.baseRange =600;
+			this.maxImage = 32;
+		case "black":
+			this.imgs = greenLaserSprite;
+			this.baseDMG = 10;
+			this.baseAS = 25; //20 ms per frame aka 50 * 20 = 1 second
+			this.baseRange =600;
+			this.maxImage = 32;
+		default:
+			this.imgs = greenLaserSprite;
+			this.baseDMG = 10;
+			this.baseAS = 25; //20 ms per frame aka 50 * 20 = 1 second
+			this.baseRange =600;
+			this.maxImage = 32;
+	}
+	
+	
+	//Image Variables	
+	this.imgSpeed = 3;
+	this.currentImg = 0;
+	
+	
+}	
 
 /***************************************************/
 /***************************************************/
@@ -209,6 +284,11 @@ function preloading()
 	stage.addEventListener('touchcancel', handleCancel, false);
 	stage.addEventListener('touchleave', handleEnd, false);
 	stage.addEventListener('touchmove', handleMove, false);
+	stage.addEventListener('mousedown', mouseStart, false);
+	stage.addEventListener('mousemove', mouseMove, false);
+	stage.addEventListener('mouseup', mouseEnd, false);
+	stage.addEventListener('mouseout', mouseCancel, false);
+	
 	
 	/****************************************************************/
 	/************************* GRID CREATION ************************/
@@ -247,7 +327,6 @@ function preloading()
 	/****************************************************************/
 	
 	
-	//sleepFor(10000);
 	//Setup Creeps to use
 		for(var i = 0; i < 32;i++){
 			tempImg = new Image()
@@ -329,6 +408,19 @@ function preloading()
 	                // bdragon[i] = tempImg;
 	            // }
 	        // }//end of black dragon
+			
+			
+			//Setup Creeps to use
+		for(var i = 0; i < 32;i++){
+			tempImg = new Image()
+			if(i < 10){
+				tempImg.src = "game/assets/img/greenLaser/green000" + i + ".png";
+				greenLaserSprite[i] = tempImg;
+			} else {
+				tempImg.src = "game/assets/img/greenLaser/green00" + i + ".png";
+				greenLaserSprite[i] = tempImg;
+			}
+		} //end of Green Laser Tower
 
 		waveSetup();
 		updateTime = new Date().getTime();
@@ -381,9 +473,9 @@ function update()
 							// ctx.strokeStyle = 'black';
 							// ctx.stroke();
 						// }
-						//ctx.font = '10pt Calibri';
-						//ctx.fillStyle = 'red';
-						//ctx.fillText(""+i, Grid[i].locX-cameraLocX+1,Grid[i].locY-cameraLocY+imgSize/2); //Test To see Grid Number
+						// ctx.font = '12pt Calibri';
+						// ctx.fillStyle = 'red';
+						// ctx.fillText("("+Grid[i].locX+","+Grid[i].locY+")", Grid[i].locX-cameraLocX+1,Grid[i].locY-cameraLocY+imgSize/2); //Test To see Grid Number
 					}
 				}
 			}
@@ -391,12 +483,13 @@ function update()
 	}
 	
 	//Draw Tower Sprites
+	console.log(Towers.length);
 	for(var i = 0; i < Towers.length; i++){
-		if(Towers[i].locX+Towers[i].size >= cameraLocX){
+		if(Towers[i].locX+(4*imgSize) >= cameraLocX){
 			if(Towers[i].locX <= cameraLocX + cameraWidth){
-				if(Towers[i].locY+Towers[i].size >= cameraLocY){
+				if(Towers[i].locY+(4*imgSize) >= cameraLocY){
 					if(Towers[i].locY <= cameraLocY + cameraHeight){
-						ctx.drawImage(Towers[i].img,Towers[i].locX-cameraLocX,Towers[i].locY-cameraLocY,imgSize,imgSize);
+						ctx.drawImage(Towers[i].imgs[0],Towers[i].locX-cameraLocX,Towers[i].locY-cameraLocY,imgSize,imgSize);
 						//ctx.strokeText(""+i, Grid[i].locX-cameraLocX+1,Grid[i].locY-cameraLocY+imgSize/2); //Test To see Grid Number
 					}
 				}
@@ -405,7 +498,7 @@ function update()
 	}
 	
 	//Draw Creep  
-	console.log("Number of Creeps: " + Creeps.length);
+	//console.log("Number of Creeps: " + Creeps.length);
 	for(var i = 0; i < Creeps.length; i++){
 		if(Creeps[i].locX+(4*imgSize) >= cameraLocX){
 			if(Creeps[i].locX <= cameraLocX + cameraWidth){
@@ -421,13 +514,26 @@ function update()
 	}
 	//Draw Projectile Sprite
 	
+	//Draw Purchase
+	if(selectedTile >= 0 && purchasing){
+		if(Grid[selectedTile].tower == -1 && Grid[selectedTile].buildable){
+			//No tower on tile create Hexegon
+			ctx.drawImage(greenimg,Grid[selectedTile].locX-imgSize,Grid[selectedTile].locY-imgSize,imgSize,imgSize);
+			ctx.drawImage(heximg,Grid[selectedTile].locX-imgSize,Grid[selectedTile].locY-imgSize,imgSize,imgSize);
+			ctx.drawImage(canimg,Grid[selectedTile].locX+imgSize,Grid[selectedTile].locY-imgSize,imgSize,imgSize);
+			//ctx.drawImage(img,x,y,64,64);
+		}
+	}
 	
 	//Draw HUD
 	ctx.font = '20pt Calibri';
 	ctx.fillStyle = 'yellow';
 	//ctx.fillText("Camera X: " + cameraLocX + " Camera Y: " + cameraLocY,stage.width*0.1,stage.height*0.05);
-	ctx.fillText("Average Update Time: " + (-1)*updateTimeTotal/updateCount,stage.width*0.1,stage.height*0.05);
+	//ctx.fillText("Average Update Time: " + (-1)*updateTimeTotal/updateCount,stage.width*0.1,stage.height*0.05);
 	//ctx.fillText("Camera width: " + stage.width + " Camera Height: " + stage.height,stage.width*0.1,stage.height*0.15);
+	ctx.fillText("Selected Tile = " + selectedTile,stage.width*0.1,stage.height*0.15);
+	
+	
 	
 	
 	//Tower Movement
@@ -472,13 +578,15 @@ function update()
 				Creeps[i].imgSpeed = Creeps[i].imgSpeed-1;
 		}
 	}
+	
+	
 }
 
 
 
 //Creep Spawner
 function waveSetup(){
-	console.log("Wave is Setup");
+	//console.log("Wave is Setup");
 	clearInterval(timerspawnDelay);
 	clearInterval(timerwaveSpawner);
 	wave = wave + 1;
@@ -488,7 +596,7 @@ function waveSetup(){
 var modifierTestArray = [];
 function waveSpawner()
 {
-	console.log("In Wave " + wave + " Spawner");
+	//console.log("In Wave " + wave + " Spawner");
 	clearInterval(waveSetup);
 	timerwaveSetup = setTimeout(waveSetup,20000);
 	timerspawnDelay = setInterval(spawnCreeps,spawnDelay);
@@ -499,7 +607,7 @@ function waveSpawner()
 }
 //var modifierTestArray = [];
 function spawnCreeps(){
-	console.log("Spawning Creeps");
+	//console.log("Spawning Creeps");
 	tempCreep = new Creep(wave,"Basic",imgSize*getRandomArbitrary(0,1),imgSize*getRandomArbitrary(spacing,spacing+1),modifierTestArray,airdragon);
 	tempCreep.dir = 1;
 	tempCreep.currentImg = getRandomInt(0,7);
@@ -522,6 +630,7 @@ function getRandomArbitrary(min, max) {
 }
 
 function resizeCanvas(){
+
 	if(window.height > window.width){
 		//portrait
 		stage.width = window.innerWidth;
@@ -567,6 +676,8 @@ function resizeCanvas(){
 //Touch Functions
 function handleStart(evt) {
 	evt.preventDefault();
+	//document.getElementById("demo").innerHTML  = "Start";
+	mouseStart = true;
 	console.log("touchstart.");
 	startX = evt.changedTouches[0].pageX;
 	startY = evt.changedTouches[0].pageY;
@@ -588,29 +699,30 @@ function handleStart(evt) {
 }
 
 function handleMove(evt) {
-	evt.preventDefault();
-	var touches = evt.changedTouches;
-	
-	
-	cameraLocX = cameraLocX +(startX - touches[0].screenX)
-	startX = touches[0].screenX;
-	cameraLocY = cameraLocY +(startY - touches[0].screenY)
-	startY = touches[0].screenY;
-	if(cameraLocX < 0){
-		cameraLocX = 0;
-	}
-	if(cameraLocX > GRID_WIDTH*imgSize-cameraWidth){
-		cameraLocX = GRID_WIDTH*imgSize-cameraWidth;
-	}
-	if(cameraLocY > GRID_HEIGHT*imgSize-cameraHeight){
-		cameraLocY = GRID_HEIGHT*imgSize-cameraHeight;
-	}
-	if(cameraLocY < 0){
-		cameraLocY = 0;
-	}
+		evt.preventDefault();
+		var touches = evt.changedTouches;
+		document.getElementById("demo").innerHTML  = "Moving";
+		
+		cameraLocX = cameraLocX +(startX - touches[0].screenX)
+		startX = touches[0].screenX;
+		cameraLocY = cameraLocY +(startY - touches[0].screenY)
+		startY = touches[0].screenY;
+		if(cameraLocX < 0){
+			cameraLocX = 0;
+		}
+		if(cameraLocX > GRID_WIDTH*imgSize-cameraWidth){
+			cameraLocX = GRID_WIDTH*imgSize-cameraWidth;
+		}
+		if(cameraLocY > GRID_HEIGHT*imgSize-cameraHeight){
+			cameraLocY = GRID_HEIGHT*imgSize-cameraHeight;
+		}
+		if(cameraLocY < 0){
+			cameraLocY = 0;
+		}
 }
 
 function handleEnd(evt) {
+
   evt.preventDefault();
   log("touchend/touchleave.");
   var touches = evt.changedTouches;
@@ -618,7 +730,7 @@ function handleEnd(evt) {
   for (var i=0; i < touches.length; i++) {
     var color = colorForTouch(touches[i]);
     var idx = ongoingTouchIndexById(touches[i].identifier);
-
+	document.getElementById("demo").innerHTML  = "End";
     if(idx >= 0) {
       //ctx.lineWidth = 4;
       //ctx.fillStyle = color;
@@ -676,4 +788,117 @@ function ongoingTouchIndexById(idToFind) {
 function sleepFor( sleepDuration ){
     var now = new Date().getTime();
     while(new Date().getTime() < now + sleepDuration){ /* do nothing */ } 
+}
+
+
+
+
+
+
+
+
+
+
+/*******************************************************/
+/***************** Mouse Movement **********************/
+/*******************************************************/
+ function mouseStart(evt) {
+	evt.preventDefault();
+	
+	mouseIsDown = true;
+	//console.log("touchstart.");
+	startX = evt.screenX;
+	startY = evt.screenY;
+	
+	//document.getElementById("onStart").innerHTML  = "Started <br> StartX = " + startX + "&#09 startY = " + startY;
+	
+
+}
+
+function mouseMove(evt) {
+	if(mouseIsDown){
+		evt.preventDefault();
+		mouseMoved = true;
+		cameraLocX = cameraLocX +(startX - evt.screenX)
+		startX = evt.screenX;
+		cameraLocY = cameraLocY +(startY - evt.screenY)
+		startY = evt.screenY;
+		//document.getElementById("onMove").innerHTML  = "Moving <br> StartX = " + startX + "    startY = " + startY;
+		if(cameraLocX < 0){
+			cameraLocX = 0;
+		}
+		if(cameraLocX > GRID_WIDTH*imgSize-cameraWidth){
+			cameraLocX = GRID_WIDTH*imgSize-cameraWidth;
+		}
+		if(cameraLocY > GRID_HEIGHT*imgSize-cameraHeight){
+			cameraLocY = GRID_HEIGHT*imgSize-cameraHeight;
+		}
+		if(cameraLocY < 0){
+			cameraLocY = 0;
+		}
+	}
+}
+var actualX;
+var actualY;
+function mouseEnd(evt) {
+	evt.preventDefault();
+	mouseIsDown = false;
+	//document.getElementById("onEnd").innerHTML  = "End <br> " + mouseMoved;
+	//document.getElementById("onEnd").innerHTML  = document.getElementById("onEnd").innerHTML  + "End <br> " + mouseMoved;
+	actualX = evt.pageX + cameraLocX;
+	actualY = evt.pageY + cameraLocY;
+	//See if player clicked a grid square
+	if(!mouseMoved && !purchasing){
+	
+		for(var i = 0; i < Grid.length; i++){
+			//document.getElementById("onEnd").innerHTML  = document.getElementById("onEnd").innerHTML  + "<br>" + i;
+			//document.getElementById("onEnd").innerHTML  = "ActualX: " + actualX + "<br>ActualY: " + actualY;
+			// document.getElementById("onEnd").innerHTML  = "<br>" + actualX + " > " + Grid[i].locX + " && " +  actualX + " < " + (Grid[i].locX + Grid[i].size);
+			if(actualX > Grid[i].locX && actualX < (Grid[i].locX + Grid[i].size)){
+			//document.getElementById("onEnd").innerHTML  = document.getElementById("onEnd").innerHTML + "<br>It is Within the X range";
+				if(actualY > Grid[i].locY && actualY < (Grid[i].locY + Grid[i].size)){
+					//document.getElementById("onEnd").innerHTML  = "Gride square " + i + " has been clicked!";
+					selectedTile = i;
+					if(Grid[selectedTile].tower == -1){
+						purchasing = true;
+					}
+				}
+			}
+		}
+	}
+	if(purchasing){
+		if(selectedTile != -1){
+			if(Grid[selectedTile].tower == -1){
+				if(actualY > Grid[selectedTile].locY-imgSize && actualY < Grid[selectedTile].locY && actualX > Grid[selectedTile].locX-imgSize && actualX < Grid[selectedTile].locX){
+					//Green purchase clicking
+					console.log("Green Clicked");
+					
+					console.log("Creating Tower");
+					tempTow = new Tower("green",Grid[selectedTile].locX,Grid[selectedTile].locY);
+					Towers.push(tempTow);
+					
+					
+					purchasing = false;
+				} else if(actualY > Grid[selectedTile].locY-imgSize && actualY < Grid[selectedTile].locY && actualX > Grid[selectedTile].locX+imgSize && actualX < Grid[selectedTile].locX+imgSize*2){
+					//Cancel button clicked
+					selectedTile = -1;
+					purchasing = false;
+					console.log("Cancelling");
+				}
+			} else {
+				//something went wrong
+				console.log("AHHHHH!!!!");
+				purchasing = false;
+			}
+		}
+	}
+	mouseMoved = false;
+	//document.getElementById("onEnd").innerHTML  = "End <br> StartX = " + startX + "    startY = " + startY;
+}
+
+function mouseCancel(evt) {
+	evt.preventDefault();
+	mouseIsDown = false;
+	mouseMoved = false;
+ // document.getElementById("onEnd").innerHTML  = "End <br> StartX = " + startX + "    startY = " + startY;
 }
