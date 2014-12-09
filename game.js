@@ -188,7 +188,8 @@ var Tower = function(type,locX,locY){
 	//Location Variables
 	this.locX = locX;
 	this.locY = locY;
-	
+	this.centerX = locX / 2;
+	this.centerY = locY / 2;
 	
 	//Stat Variables
 	this.baseDMG = 000;
@@ -234,6 +235,14 @@ var Tower = function(type,locX,locY){
 			this.baseAS = 25; //20 ms per frame aka 50 * 20 = 1 second
 			this.baseRange =600;
 			this.maxImage = 32;
+	}
+	
+	
+	var acquireTarget = function(creeps){
+		for(i=0;i<creeps.length;i++){
+			//sqrt( (creeepX-TowerX)^2 + (creepY-TowerY)^2  )
+			this.locX - creeps[i].locX
+		}
 	}
 	
 	
@@ -489,7 +498,17 @@ function update()
 			if(Towers[i].locX <= cameraLocX + cameraWidth){
 				if(Towers[i].locY+(4*imgSize) >= cameraLocY){
 					if(Towers[i].locY <= cameraLocY + cameraHeight){
-						ctx.drawImage(Towers[i].imgs[0],Towers[i].locX-cameraLocX,Towers[i].locY-cameraLocY,imgSize,imgSize);
+						ctx.drawImage(Towers[i].imgs[Towers[i].currentImg],Towers[i].locX-cameraLocX,Towers[i].locY-cameraLocY,imgSize,imgSize);
+						//ctx.arc(Towers[i].locX,Towers[i].locY,100,0*Math.PI,2*Math.PI);
+						//ctx.strokeStyle="red";
+						//ctx.stroke();
+						
+						if(Towers[i].currentImg < 31){
+							console.log("Tower " + i + " img = " + Towers[i].currentImg);
+							Towers[i].currentImg = Towers[i].currentImg + 1;
+						} else {
+							Towers[i].currentImg = 0;
+						}
 						//ctx.strokeText(""+i, Grid[i].locX-cameraLocX+1,Grid[i].locY-cameraLocY+imgSize/2); //Test To see Grid Number
 					}
 				}
@@ -528,6 +547,7 @@ function update()
 	//Draw HUD
 	ctx.font = '20pt Calibri';
 	ctx.fillStyle = 'yellow';
+	
 	//ctx.fillText("Camera X: " + cameraLocX + " Camera Y: " + cameraLocY,stage.width*0.1,stage.height*0.05);
 	//ctx.fillText("Average Update Time: " + (-1)*updateTimeTotal/updateCount,stage.width*0.1,stage.height*0.05);
 	//ctx.fillText("Camera width: " + stage.width + " Camera Height: " + stage.height,stage.width*0.1,stage.height*0.15);
@@ -873,9 +893,10 @@ function mouseEnd(evt) {
 					//Green purchase clicking
 					console.log("Green Clicked");
 					
+					
 					console.log("Creating Tower");
 					tempTow = new Tower("green",Grid[selectedTile].locX,Grid[selectedTile].locY);
-					Towers.push(tempTow);
+					Grid[selectedTile].tower = Towers.push(tempTow)-1;
 					
 					
 					purchasing = false;
