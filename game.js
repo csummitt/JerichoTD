@@ -102,10 +102,10 @@ var fdragon = [];
 var gdragon = [];
 var bdragon = [];
 
-
+var availableNumbers = [];
 var greenLaserSprite = [];
 
-
+var creepID = 0;
 var spacing = 2;
 var buildArea = (GRID_WIDTH-spacing*6)/2;
 
@@ -145,7 +145,14 @@ var Creep = function(wave,type,locX,locY,modifiers,imgs){
 	this.baseHP = (wave*25)+((25*(wave-1))/8) ^2;
 	this.baseSpeed = 100;
 	this.baseArmor = Math.floor(wave/5);
+	if(availableNumbers.length < 1){
+		this.UID = creepID;
+		creepID = creepID + 1;
+	} else {
+		this.UID = availableNumbers.pop();
+	}
 	
+	this.dead = false;
 	
 	switch (type) {
 		case "Armor":
@@ -192,11 +199,12 @@ var Tower = function(type,locX,locY){
 	this.centerY = locY / 2;
 	
 	//Stat Variables
-	this.baseDMG = 000;
+	this.baseDMG = 0;
 	this.baseAS = 10000000;
 	this.baseRange = 0;
 	this.level = 1;
 	this.target = -1;
+	this.attackDelay = 0;
 	
 	switch (type) {
 		case "green":
@@ -237,14 +245,27 @@ var Tower = function(type,locX,locY){
 			this.maxImage = 32;
 	}
 	
-	
-	var acquireTarget = function(creeps){
+	//This is throwing a (Uncaught TypeError: undefined is not a function) so moving it outside of tower
+	/*
+	var acquireTarget = function(creeps, tower){
+		var distance = 0;
+		var targetIndex=creeps.indexOf(tower.target);
+		
+		distance = Math.sqrt( Math.pow(creeps[targetIndex].locX/2 - tower.centerX, 2) + Math.pow(creeps[targetIndex].locY/2 - tower.centerY, 2));
+		if(distance <= tower.baseRange){
+			return tower.target;
+		}
+		
 		for(i=0;i<creeps.length;i++){
 			//sqrt( (creeepX-TowerX)^2 + (creepY-TowerY)^2  )
-			this.locX - creeps[i].locX
+			distance = Math.sqrt( Math.pow(creeps[i].locX/2 - tower.centerX, 2) + Math.pow(creeps[i].locY/2 - tower.centerY, 2));
+			if(distance <= tower.baseRange){
+				return creeps[i].UID;
+			}
 		}
+		return -1;
 	}
-	
+	*/
 	
 	//Image Variables	
 	this.imgSpeed = 3;
@@ -252,6 +273,28 @@ var Tower = function(type,locX,locY){
 	
 	
 }	
+
+var acquireTarget = function(creeps, tower){
+	var distance = 0;
+	var targetIndex=creeps.indexOf(tower.target);
+	if(tower.target >= 0){
+		distance = Math.sqrt( Math.pow(creeps[targetIndex].locX/2 - tower.centerX, 2) + Math.pow(creeps[targetIndex].locY/2 - tower.centerY, 2));
+		if(distance <= tower.baseRange){
+			return tower.target;
+		}
+	}
+	
+	for(i=0;i<creeps.length;i++){
+		//sqrt( (creeepX-TowerX)^2 + (creepY-TowerY)^2  )
+		distance = Math.sqrt( Math.pow(creeps[i].locX/2 - tower.centerX, 2) + Math.pow(creeps[i].locY/2 - tower.centerY, 2));
+		console.log("Distance: " + distance);
+		if(distance <= tower.baseRange){
+			console.log("New Target: " + i);
+			return creeps[i].UID;
+		}
+	}
+	return -1;
+}
 
 /***************************************************/
 /***************************************************/
@@ -492,7 +535,7 @@ function update()
 	}
 	
 	//Draw Tower Sprites
-	console.log(Towers.length);
+	//console.log(Towers.length);
 	for(var i = 0; i < Towers.length; i++){
 		if(Towers[i].locX+(4*imgSize) >= cameraLocX){
 			if(Towers[i].locX <= cameraLocX + cameraWidth){
@@ -504,7 +547,7 @@ function update()
 						//ctx.stroke();
 						
 						if(Towers[i].currentImg < 31){
-							console.log("Tower " + i + " img = " + Towers[i].currentImg);
+							//console.log("Tower " + i + " img = " + Towers[i].currentImg);
 							Towers[i].currentImg = Towers[i].currentImg + 1;
 						} else {
 							Towers[i].currentImg = 0;
@@ -557,7 +600,50 @@ function update()
 	
 	
 	//Tower Movement
-	
+		//sprites for tower are drawn above, don't think this section is needed(unless tracking creeps in which case move below creep movements)
+		var tempCreep;
+	for (var i = 0; i < Towers.length; i++){
+		//Test to see if creep is dead
+		tempCreep = Creeps.indexOf(Towers[i].target);
+		if(tempCreep == -1 || Creeps[tempCreep].dead){
+			Towers[i].target = -1;
+		}
+		
+		//Check to see if Tower has valid target
+		if(Towers[i].target < 0){
+			Towers[i].target = acquireTarget(Creeps,Towers[i]);
+		}
+		//Reset tempCreep in case tower acquired new target
+		tempCreep = Creeps.indexOf(Towers[i].target);
+		console.log("target: " + tempCreep);
+		
+		
+		//Check to see if Tower can attack
+		if (Towers[i].attackDelay > 0) {
+			//Tower can't attack change attack delay
+			Towers[i].attackDelay = Towers[i].attackDelay - 1;
+			Console.log("Attack Delay: " + Towers[i].attackDelay);
+		} else {
+			//Check to see if new target was acquired;
+			if(tempCreep >= 0) {
+				//Tower can attack
+				Towers[i].attackDelay = Towers[i].baseAS;
+				Creeps[tempCreep].HP = Creeps[tempCreep].HP - Towers[i].baseDMG;
+				Console.log("Creep " + tempCreep + " HP: " + Creeps[tempCreep].HP);
+				if (Creeps[tempCreep].HP <= 0) {
+				
+					Creeps[tempCreep].dead = true;
+					Console.log("Creep Died");
+					//This removal could cause null pointers..
+					Creeps.splice(tempCreep,1);
+
+					//Change towers target back to none(-1)
+					Towers[i].target = -1;
+					
+				}
+			}
+		}
+	}
 	//Projectile Movement
 	
 	//Creep Movement
