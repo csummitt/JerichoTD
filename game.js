@@ -203,15 +203,17 @@ var Tower = function(type,locX,locY){
 	this.baseAS = 10000000;
 	this.baseRange = 0;
 	this.level = 1;
-	this.target = -1;
+	this.target;
+	console.log(this.target);
 	this.attackDelay = 0;
 	
 	switch (type) {
 		case "green":
+			console.log("Green Tower Created");
 			this.imgs = greenLaserSprite;
 			this.baseDMG = 10;
 			this.baseAS = 25; //20 ms per frame aka 50 * 20 = 1 second
-			this.baseRange =600;
+			this.baseRange =100;
 			this.maxImage = 32;
 		case "red":
 			this.imgs = greenLaserSprite;
@@ -241,7 +243,7 @@ var Tower = function(type,locX,locY){
 			this.imgs = greenLaserSprite;
 			this.baseDMG = 10;
 			this.baseAS = 25; //20 ms per frame aka 50 * 20 = 1 second
-			this.baseRange =600;
+			this.baseRange =100;
 			this.maxImage = 32;
 	}
 	
@@ -276,9 +278,9 @@ var Tower = function(type,locX,locY){
 
 var acquireTarget = function(creeps, tower){
 	var distance = 0;
-	var targetIndex=creeps.indexOf(tower.target);
-	if(tower.target >= 0){
-		distance = Math.sqrt( Math.pow(creeps[targetIndex].locX/2 - tower.centerX, 2) + Math.pow(creeps[targetIndex].locY/2 - tower.centerY, 2));
+	var targetCreep=tower.target;
+	if(!(tower.target === null)){
+		distance = Math.sqrt( Math.pow(targetCreep.locX/2 - tower.centerX, 2) + Math.pow(targetCreep.locY/2 - tower.centerY, 2));
 		if(distance <= tower.baseRange){
 			return tower.target;
 		}
@@ -287,13 +289,13 @@ var acquireTarget = function(creeps, tower){
 	for(i=0;i<creeps.length;i++){
 		//sqrt( (creeepX-TowerX)^2 + (creepY-TowerY)^2  )
 		distance = Math.sqrt( Math.pow(creeps[i].locX/2 - tower.centerX, 2) + Math.pow(creeps[i].locY/2 - tower.centerY, 2));
-		console.log("Distance: " + distance);
+		//console.log("Distance: " + distance);
 		if(distance <= tower.baseRange){
-			console.log("New Target: " + i);
-			return creeps[i].UID;
+			//console.log("New Target: " + creeps[i].UID);
+			return creeps[i];
 		}
 	}
-	return -1;
+	return null;
 }
 
 /***************************************************/
@@ -604,41 +606,46 @@ function update()
 		var tempCreep;
 	for (var i = 0; i < Towers.length; i++){
 		//Test to see if creep is dead
-		tempCreep = Creeps.indexOf(Towers[i].target);
-		if(tempCreep == -1 || Creeps[tempCreep].dead){
-			Towers[i].target = -1;
+		//console.log((tempCreep) + "==" + null);
+		tempCreep = (Towers[i].target);
+		//console.log((tempCreep) + "==" + null);
+		if((tempCreep) == null){
+			//console.log("here I am");
+			Towers[i].target = null;
+		} else if(tempCreep.dead){
+			Towers[i].target = null;
 		}
-		
 		//Check to see if Tower has valid target
-		if(Towers[i].target < 0){
+		if((Towers[i].target) === null){
 			Towers[i].target = acquireTarget(Creeps,Towers[i]);
+			//console.log("Acquired Target: " + Towers[i].target.UID);
 		}
 		//Reset tempCreep in case tower acquired new target
-		tempCreep = Creeps.indexOf(Towers[i].target);
-		console.log("target: " + tempCreep);
+		tempCreep = Towers[i].target;
+		//console.log("target: " + tempCreep);
 		
 		
 		//Check to see if Tower can attack
 		if (Towers[i].attackDelay > 0) {
 			//Tower can't attack change attack delay
 			Towers[i].attackDelay = Towers[i].attackDelay - 1;
-			Console.log("Attack Delay: " + Towers[i].attackDelay);
+			//console.log("Attack Delay: " + Towers[i].attackDelay);
 		} else {
 			//Check to see if new target was acquired;
-			if(tempCreep >= 0) {
+			if(!((tempCreep === null))) {
 				//Tower can attack
 				Towers[i].attackDelay = Towers[i].baseAS;
-				Creeps[tempCreep].HP = Creeps[tempCreep].HP - Towers[i].baseDMG;
-				Console.log("Creep " + tempCreep + " HP: " + Creeps[tempCreep].HP);
-				if (Creeps[tempCreep].HP <= 0) {
+				tempCreep.HP = tempCreep.HP - Towers[i].baseDMG;
+				//console.log("Creep " + tempCreep.UID + " HP: " + tempCreep.HP);
+				if (tempCreep.HP <= 0) {
 				
-					Creeps[tempCreep].dead = true;
-					Console.log("Creep Died");
+					tempCreep.dead = true;
+					//console.log("Creep Died");
 					//This removal could cause null pointers..
-					Creeps.splice(tempCreep,1);
+					Creeps.splice(Creeps.indexOf(tempCreep),1);
 
 					//Change towers target back to none(-1)
-					Towers[i].target = -1;
+					Towers[i].target = null;
 					
 				}
 			}
