@@ -123,7 +123,7 @@ var purchasing = false;
 /***************************************************/
 /***************************************************/
 /***************************************************/
-var logMessage = '';
+var logMessage = "Log";
 var startTime;
 var displaySec = 0;
 var displayMin = 0;
@@ -665,7 +665,7 @@ function update()
 	ctx.fillStyle = 'white';
 	ctx.fillRect(0,30,stage.width,30)
 	ctx.fillStyle = 'black';
-	ctx.fillText(logMessage, stage.width*0.01,35);
+	ctx.fillText(logMessage, stage.width*0.01,50);
 
 	//TESTing Section
 	//ctx.fillText("Camera X: " + cameraLocX + " Camera Y: " + cameraLocY,stage.width*0.1,stage.height*0.05);
@@ -915,17 +915,17 @@ function handleStart(evt) {
 	var touches = evt.changedTouches;
 	//ctx.fillStyle = "black";
 	//ctx.fillRect(0, 0, stage.width, stage.height);	
-	for (var i=0; i < touches.length;i++){
-		log("tochstart:"+i+"...");
-		ongoingTouches.push(copyTouch(touches[i]));
-		var color = colorForTouch(touches[i]);
-		ctx.beginPath();
-		ctx.arc(touches[i].pageX, touches[i].pageY, 4, 0, 2*Math.PI, false); //A circle at the start
-		ctx.fillStyle = color;
-		ctx.fill();
-		
-		console.log("touchstart:"+i+".");
-	} 
+	//for (var i=0; i < touches.length;i++){
+	//	log("tochstart:"+i+"...");
+	//	ongoingTouches.push(copyTouch(touches[i]));
+	//	var color = colorForTouch(touches[i]);
+	//	ctx.beginPath();
+	//	ctx.arc(touches[i].pageX, touches[i].pageY, 4, 0, 2*Math.PI, false); //A circle at the start
+	//	ctx.fillStyle = color;
+	//	ctx.fill();
+	//	
+	//	console.log("touchstart:"+i+".");
+	//} 
 
 }
 
@@ -933,7 +933,7 @@ function handleMove(evt) {
 		evt.preventDefault();
 		touchmoved = true;
 		var touches = evt.changedTouches;
-		document.getElementById("demo").innerHTML  = "Moving";
+		//document.getElementById("demo").innerHTML  = "Moving";
 		
 		cameraLocX = cameraLocX +(startX - touches[0].screenX)
 		startX = touches[0].screenX;
@@ -959,63 +959,55 @@ function handleEnd(evt) {
 	logMessage("Touched Ended");
 	
 	var touches = evt.changedTouches;
-	//This is for multiple touches I'm just worried about 1
-	for (var i=0; i < touches.length; i++) {
-		var color = colorForTouch(touches[i]);
-		var idx = ongoingTouchIndexById(touches[i].identifier);
-		if(idx >= 0) {
+	
 		
-			touchX = touches[i].pageX;
-			touchY = touches[i].pageY;
-			actualX = touchX + cameraLocX;
-			actualY = touchY + cameraLocY;
-			if (!touchmoved && !purchasing) {
-				for(var i = 0; i < Grid.length; i++){
-					if(actualX > Grid[i].locX && actualX < (Grid[i].locX + Grid[i].size)){
-					//document.getElementById("onEnd").innerHTML  = document.getElementById("onEnd").innerHTML + "<br>It is Within the X range";
-						if(actualY > Grid[i].locY && actualY < (Grid[i].locY + Grid[i].size)){
-							//document.getElementById("onEnd").innerHTML  = "Gride square " + i + " has been clicked!";
-							selectedTile = i;
-							if(Grid[selectedTile].tower == -1){
-								purchasing = true;
-							}
-						}
-					}
-				}
-			}
-			if(purchasing){
-				if(selectedTile != -1){
+	//touchX = touches[0].screenX;
+	//touchY = touches[0].screenX;
+	actualX = startX + cameraLocX;
+	actualY = startY + cameraLocY;
+	if (!touchmoved && !purchasing) {
+		for(var i = 0; i < Grid.length; i++){
+			if(actualX > Grid[i].locX && actualX < (Grid[i].locX + Grid[i].size)){
+			//document.getElementById("onEnd").innerHTML  = document.getElementById("onEnd").innerHTML + "<br>It is Within the X range";
+				if(actualY > Grid[i].locY && actualY < (Grid[i].locY + Grid[i].size)){
+					//document.getElementById("onEnd").innerHTML  = "Gride square " + i + " has been clicked!";
+					selectedTile = i;
 					if(Grid[selectedTile].tower == -1){
-						if(actualY > Grid[selectedTile].locY-imgSize && actualY < Grid[selectedTile].locY && actualX > Grid[selectedTile].locX-imgSize && actualX < Grid[selectedTile].locX){
-							//Green purchase clicking
-							console.log("Green Clicked");
-							
-							
-							console.log("Creating Tower");
-							tempTow = new Tower("green",Grid[selectedTile].locX,Grid[selectedTile].locY);
-							Grid[selectedTile].tower = Towers.push(tempTow)-1;
-							
-							
-							purchasing = false;
-						} else if(actualY > Grid[selectedTile].locY-imgSize && actualY < Grid[selectedTile].locY && actualX > Grid[selectedTile].locX+imgSize && actualX < Grid[selectedTile].locX+imgSize*2){
-							//Cancel button clicked
-							selectedTile = -1;
-							purchasing = false;
-							console.log("Cancelling");
-						}
-					} else {
-						//something went wrong
-						console.log("AHHHHH!!!!");
-						purchasing = false;
+						purchasing = true;
 					}
 				}
 			}
-			touchmoved = false;
-			ongoingTouches.splice(idx, 1);  // remove it; we're done
-		} else {
-			log("can't figure out which touch to end");
 		}
 	}
+	if(purchasing){
+		if(selectedTile != -1){
+			if(Grid[selectedTile].tower == -1){
+				if(actualY > Grid[selectedTile].locY-imgSize && actualY < Grid[selectedTile].locY && actualX > Grid[selectedTile].locX-imgSize && actualX < Grid[selectedTile].locX){
+					//Green purchase clicking
+					console.log("Green Clicked");
+					
+					
+					console.log("Creating Tower");
+					tempTow = new Tower("green",Grid[selectedTile].locX,Grid[selectedTile].locY);
+					Grid[selectedTile].tower = Towers.push(tempTow)-1;
+					
+					
+					purchasing = false;
+				} else if(actualY > Grid[selectedTile].locY-imgSize && actualY < Grid[selectedTile].locY && actualX > Grid[selectedTile].locX+imgSize && actualX < Grid[selectedTile].locX+imgSize*2){
+					//Cancel button clicked
+					selectedTile = -1;
+					purchasing = false;
+					console.log("Cancelling");
+				}
+			} else {
+				//something went wrong
+				console.log("AHHHHH!!!!");
+				purchasing = false;
+			}
+		}
+	}
+	touchmoved = false;
+	ongoingTouches.splice(idx, 1);  // remove it; we're done
 }
 
 function handleCancel(evt) {
