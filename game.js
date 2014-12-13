@@ -173,6 +173,8 @@ var Creep = function(wave,type,locX,locY,modifiers,imgs){
 	this.baseHP = (wave*25)+((25*(wave-1))/8) ^2;
 	this.baseSpeed = 100;
 	this.baseArmor = Math.floor(wave/5);
+	this.exp = Math.floor(wave/5);
+	this.bounty = 5 + Math.floor(wave/5);
 	if(availableNumbers.length < 1){
 		this.UID = creepID;
 		creepID = creepID + 1;
@@ -680,99 +682,105 @@ function update()
 	/************** Game Loop Processing ***************/
 	/***************************************************/
 	/***************************************************/
-
-	
-	//Tower Movement
-		//sprites for tower are drawn above, don't think this section is needed(unless tracking creeps in which case move below creep movements)
-		var tempCreep;
-	for (var i = 0; i < Towers.length; i++){
-		//Test to see if creep is dead
-		//console.log((tempCreep) + "==" + null);
-		tempCreep = (Towers[i].target);
-		//console.log((tempCreep) + "==" + null);
-		if((tempCreep) == null){
-			//console.log("here I am");
-			Towers[i].target = null;
-		} else if(tempCreep.dead){
-			Towers[i].target = null;
-		}
-		//Check to see if Tower has valid target
-		if((Towers[i].target) === null){
-			Towers[i].target = acquireTarget(Creeps,Towers[i]);
-			//console.log("Acquired Target: " + Towers[i].target.UID);
-		}
-		//Reset tempCreep in case tower acquired new target
-		tempCreep = Towers[i].target;
-		//console.log("target: " + tempCreep);
+	if (Creeps.length < 300) {
 		
-		
-		//Check to see if Tower can attack
-		if (Towers[i].attackDelay > 0) {
-			//Tower can't attack change attack delay
-			Towers[i].attackDelay = Towers[i].attackDelay - 1;
-			//console.log("Attack Delay: " + Towers[i].attackDelay);
-		} else {
-			//Check to see if new target was acquired;
-			if(!((tempCreep === null))) {
-				//Tower can attack
-				Towers[i].attackDelay = Towers[i].baseAS;
-				tempCreep.HP = tempCreep.HP - Towers[i].baseDMG;
-				//console.log("Creep " + tempCreep.UID + " HP: " + tempCreep.HP);
-				if (tempCreep.HP <= 0) {
-				
-					tempCreep.dead = true;
-					//console.log("Creep Died");
-					//This removal could cause null pointers..
-					Creeps.splice(Creeps.indexOf(tempCreep),1);
-
-					//Change towers target back to none(-1)
-					Towers[i].target = null;
+		//Tower Movement
+			//sprites for tower are drawn above, don't think this section is needed(unless tracking creeps in which case move below creep movements)
+			var tempCreep;
+		for (var i = 0; i < Towers.length; i++){
+			//Test to see if creep is dead
+			//console.log((tempCreep) + "==" + null);
+			tempCreep = (Towers[i].target);
+			//console.log((tempCreep) + "==" + null);
+			if((tempCreep) == null){
+				//console.log("here I am");
+				Towers[i].target = null;
+			} else if(tempCreep.dead){
+				Towers[i].target = null;
+			}
+			//Check to see if Tower has valid target
+			if((Towers[i].target) === null){
+				Towers[i].target = acquireTarget(Creeps,Towers[i]);
+				//console.log("Acquired Target: " + Towers[i].target.UID);
+			}
+			//Reset tempCreep in case tower acquired new target
+			tempCreep = Towers[i].target;
+			//console.log("target: " + tempCreep);
+			
+			
+			//Check to see if Tower can attack
+			if (Towers[i].attackDelay > 0) {
+				//Tower can't attack change attack delay
+				Towers[i].attackDelay = Towers[i].attackDelay - 1;
+				//console.log("Attack Delay: " + Towers[i].attackDelay);
+			} else {
+				//Check to see if new target was acquired;
+				if(!((tempCreep === null))) {
+					//Tower can attack
+					Towers[i].attackDelay = Towers[i].baseAS;
+					tempCreep.HP = tempCreep.HP - Towers[i].baseDMG;
+					//console.log("Creep " + tempCreep.UID + " HP: " + tempCreep.HP);
+					if (tempCreep.HP <= 0) {
 					
+						tempCreep.dead = true;
+						//console.log("Creep Died");
+						//This removal could cause null pointers..
+						Creeps.splice(Creeps.indexOf(tempCreep),1);
+						player.kills = player.kills + 1;
+						player.expGain = player.expGain + tempCreep.exp;
+						player.cash = player.cash + tempCreep.bounty;
+						//Change towers target back to none(-1)
+						Towers[i].target = null;
+						
+					}
 				}
 			}
 		}
-	}
-	//Projectile Movement
-	
-	//Creep Movement
-	for(var i = 0; i < Creeps.length; i++){
-		if(Creeps[i].dir == 0){
-			Creeps[i].locY = Creeps[i].locY - (Creeps[i].baseSpeed/(TIME_PER_FRAME));//*2))/3;
-			if(Creeps[i].locY <= getRandomArbitrary(spacing,spacing+1)*imgSize){
-				Creeps[i].dir = Creeps[i].dir + 1;
-				//console.log("Direction " + Creeps[i].dir);
-			}
-		} else if (Creeps[i].dir == 1){
-			Creeps[i].locX = Creeps[i].locX + (Creeps[i].baseSpeed/(TIME_PER_FRAME));//*2))/3;
-			if(Creeps[i].locX >= getRandomArbitrary(GRID_HEIGHT-(spacing*2),GRID_HEIGHT-(spacing*2-1))*imgSize){
-				Creeps[i].dir = Creeps[i].dir + 1;
-				//console.log("Direction " + Creeps[i].dir);
-			}
-		} else if (Creeps[i].dir == 2){
-			Creeps[i].locY = Creeps[i].locY + (Creeps[i].baseSpeed/(TIME_PER_FRAME));//*2))/3;
-			if(Creeps[i].locY >= getRandomArbitrary(GRID_HEIGHT-(spacing*2),GRID_HEIGHT-(spacing*2-1))*imgSize){
-				Creeps[i].dir = Creeps[i].dir + 1;
-				//console.log("Direction " + Creeps[i].dir);
-			}
-		} else {
-			Creeps[i].locX = Creeps[i].locX - (Creeps[i].baseSpeed/(TIME_PER_FRAME))//*2))/3;
-			if(Creeps[i].locX <= getRandomArbitrary(spacing,spacing+1)*imgSize){
-				Creeps[i].dir = 0;
-				//console.log("Direction " + Creeps[i].dir);
-			}
-		}
-		if(Creeps[i].imgSpeed == 0){
-			Creeps[i].imgSpeed = 2;
-			if(Creeps[i].currentImg > 6){
-				Creeps[i].currentImg = 0;
+		//Projectile Movement
+		
+		//Creep Movement
+		for(var i = 0; i < Creeps.length; i++){
+			if(Creeps[i].dir == 0){
+				Creeps[i].locY = Creeps[i].locY - (Creeps[i].baseSpeed/(TIME_PER_FRAME));//*2))/3;
+				if(Creeps[i].locY <= getRandomArbitrary(spacing,spacing+1)*imgSize){
+					Creeps[i].dir = Creeps[i].dir + 1;
+					//console.log("Direction " + Creeps[i].dir);
+				}
+			} else if (Creeps[i].dir == 1){
+				Creeps[i].locX = Creeps[i].locX + (Creeps[i].baseSpeed/(TIME_PER_FRAME));//*2))/3;
+				if(Creeps[i].locX >= getRandomArbitrary(GRID_HEIGHT-(spacing*2),GRID_HEIGHT-(spacing*2-1))*imgSize){
+					Creeps[i].dir = Creeps[i].dir + 1;
+					//console.log("Direction " + Creeps[i].dir);
+				}
+			} else if (Creeps[i].dir == 2){
+				Creeps[i].locY = Creeps[i].locY + (Creeps[i].baseSpeed/(TIME_PER_FRAME));//*2))/3;
+				if(Creeps[i].locY >= getRandomArbitrary(GRID_HEIGHT-(spacing*2),GRID_HEIGHT-(spacing*2-1))*imgSize){
+					Creeps[i].dir = Creeps[i].dir + 1;
+					//console.log("Direction " + Creeps[i].dir);
+				}
 			} else {
-				Creeps[i].currentImg = Creeps[i].currentImg + 1;
+				Creeps[i].locX = Creeps[i].locX - (Creeps[i].baseSpeed/(TIME_PER_FRAME))//*2))/3;
+				if(Creeps[i].locX <= getRandomArbitrary(spacing,spacing+1)*imgSize){
+					Creeps[i].dir = 0;
+					//console.log("Direction " + Creeps[i].dir);
+				}
 			}
-		} else {
-				Creeps[i].imgSpeed = Creeps[i].imgSpeed-1;
+			if(Creeps[i].imgSpeed == 0){
+				Creeps[i].imgSpeed = 2;
+				if(Creeps[i].currentImg > 6){
+					Creeps[i].currentImg = 0;
+				} else {
+					Creeps[i].currentImg = Creeps[i].currentImg + 1;
+				}
+			} else {
+					Creeps[i].imgSpeed = Creeps[i].imgSpeed-1;
+			}
 		}
-	}
-	
+	} else {
+		ctx.font = '50pt Calibri';
+		ctx.fillStyle = 'red';
+		ctx.fillText("GAME OVER", stage.width*0.1,stage.height/2+50);
+	}	
 	
 }
 
@@ -923,9 +931,9 @@ function handleStart(evt) {
 	//	ctx.arc(touches[i].pageX, touches[i].pageY, 4, 0, 2*Math.PI, false); //A circle at the start
 	//	ctx.fillStyle = color;
 	//	ctx.fill();
-	//	
+	//	}
 	//	console.log("touchstart:"+i+".");
-	//} 
+	//
 	//touchX = touches[0].screenX;
 	//touchY = touches[0].screenX;
 	actualX = startX + cameraLocX;
@@ -1102,13 +1110,6 @@ function sleepFor( sleepDuration ){
     var now = new Date().getTime();
     while(new Date().getTime() < now + sleepDuration){ /* do nothing */ } 
 }
-
-
-
-
-
-
-
 
 
 
