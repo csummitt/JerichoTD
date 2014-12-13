@@ -934,7 +934,7 @@ function handleMove(evt) {
 		touchmoved = true;
 		var touches = evt.changedTouches;
 		//document.getElementById("demo").innerHTML  = "Moving";
-		
+		logMessage = "Touched Moved";
 		cameraLocX = cameraLocX +(startX - touches[0].screenX)
 		startX = touches[0].screenX;
 		cameraLocY = cameraLocY +(startY - touches[0].screenY)
@@ -1083,6 +1083,7 @@ function mouseMove(evt) {
 	if(mouseIsDown){
 		evt.preventDefault();
 		mouseMoved = true;
+		purchasing = false;
 		cameraLocX = cameraLocX +(startX - evt.screenX)
 		startX = evt.screenX;
 		cameraLocY = cameraLocY +(startY - evt.screenY)
@@ -1122,7 +1123,7 @@ function mouseEnd(evt) {
 				if(actualY > Grid[i].locY && actualY < (Grid[i].locY + Grid[i].size)){
 					//document.getElementById("onEnd").innerHTML  = "Gride square " + i + " has been clicked!";
 					selectedTile = i;
-					if(Grid[selectedTile].tower == -1){
+					if(Grid[selectedTile].tower == -1 && Grid[selectedTile].buildable){
 						purchasing = true;
 					}
 				}
