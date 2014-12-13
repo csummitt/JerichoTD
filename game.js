@@ -17,6 +17,11 @@ var PATH_TILE_GRASS = "game/assets/img/grass.jpg";
 var PATH_TILE_UNBUILD = "game/assets/img/unbuildgrass.jpg";
 var PATH_TILE_PATH = "game/assets/img/path.jpg";
 
+//HUD Images
+var PATH_HUD_CASH = "game/assets/img/cash.jpg";
+
+var cashImg = new Image();
+cashImg.src = PATH_HUD_CASH;
 
 //Tower Images
 var PATH_TOWER_BASIC = "";
@@ -76,7 +81,8 @@ updateTime = 0;
 updateTimeTotal = 0;
 var mouseIsDown = false;
 var mouseMoved = false;
-
+var touched = false;
+var touchmoved = false;
 
 /***************************************************/
 /***************************************************/
@@ -91,6 +97,8 @@ var spawnDelay = 500;
 var waveLength;
 var wave = 0;
 var selectedTile = -1;
+
+var player;
 
 var Grid = [];
 var Towers = [];
@@ -115,12 +123,22 @@ var purchasing = false;
 /***************************************************/
 /***************************************************/
 /***************************************************/
-
+var startTime;
+var displaySec = 0;
+var displayMin = 0;
+var displayHour = 0;
+var startSec = 0;
+var startMin = 0;
+var startHour = 0;
+var hour= 0;
+var min = 0;
+var sec = 0;
 
 /***************************************************/
 /******************* OBJECTS ***********************/
 /***************************************************/
 
+/******************TILES*************************/	
 var Tile = function(path,build,x,y,size){
 		this.pathable = path;
 		this.buildable = build;
@@ -132,7 +150,16 @@ var Tile = function(path,build,x,y,size){
 		this.tower = -1;
 	}
 
-
+/******************PLAYER*************************/	
+var Player = function(){
+	this.cash = 250;
+	this.kills = 0;
+	this.exp = 0;
+	this.expGain = 0;
+	this.towersBuilt = 0;
+	this.towersSold = 0;
+	this.waveReached = 0;
+}
 
 /******************CREEPS*************************/	
 var Creep = function(wave,type,locX,locY,modifiers,imgs){
@@ -343,7 +370,13 @@ function preloading()
 	stage.addEventListener('mouseup', mouseEnd, false);
 	stage.addEventListener('mouseout', mouseCancel, false);
 	
-	
+	player = new Player();
+	startTime = new Date().getTime();
+	startToday = new Date();
+	startSec = startToday.getSeconds();
+	startMin = startToday.getMinutes();
+	startHour = startToday.getHours();
+	//startSec = new Date.getSeconds();
 	/****************************************************************/
 	/************************* GRID CREATION ************************/
 	/****************************************************************/
@@ -478,7 +511,8 @@ function preloading()
 
 		waveSetup();
 		updateTime = new Date().getTime();
-		gameloop = setInterval(update, TIME_PER_FRAME);	
+		gameloop = setInterval(update, TIME_PER_FRAME);
+		var t = setInterval(timeTracker,999);
 }
 
 
@@ -497,8 +531,15 @@ cameraLocY = imgSize*0;
 cameraWidth = stage.width;//960;
 cameraHeight = stage.height;//540;
 //
+
 function update()
-{	
+{
+	/***************************************************/
+	/***************************************************/
+	/*************** Game Loop Variables ***************/
+	/***************************************************/
+	/***************************************************/
+
 	updateTime = updateTime - new Date().getTime();
 	updateTimeTotal = updateTimeTotal + updateTime;
 	updateTime = new Date().getTime();
@@ -506,6 +547,16 @@ function update()
 	
 	cameraWidth = stage.width;//960;
 	cameraHeight = stage.height;//540;
+
+	startTime = new Date().getTime() - startTime;
+
+
+	/***************************************************/
+	/***************** Game Loop Drawing ***************/
+	/***************************************************/
+	/***************************************************/
+
+
 	//Re-Order Images so the one on-top should be on-top
 	Creeps.sort(function(a,b) { return parseFloat(a.locY) - parseFloat(b.locY) } );
 	//Clear Canvas
@@ -535,7 +586,7 @@ function update()
 			}
 		}
 	}
-	
+	 
 	//Draw Tower Sprites
 	//console.log(Towers.length);
 	for(var i = 0; i < Towers.length; i++){
@@ -590,16 +641,38 @@ function update()
 	}
 	
 	//Draw HUD
-	ctx.font = '20pt Calibri';
-	ctx.fillStyle = 'yellow';
+	ctx.fillRect(0,0,stage.width,30); //HUD outline
+	ctx.font = '15pt Calibri';
+	ctx.fillStyle = 'black';
+	//Money Section
+	ctx.drawImage(cashImg,stage.width*0.01,5,20,20);
+	ctx.fillText(player.cash,stage.width*0.01+20,20);
+
+	//Creep Count Section
+	ctx.fillText(Creeps.length + "/300",stage.width*0.3,20);
+
+	//Wave Info Section
+	ctx.fillText("Wave: " + wave,stage.width*0.6,20);
 	
+	//Timer Section
+	ctx.fillText(hour + ":" + checkTime(min) + ":" + checkTime(sec),stage.width*0.9,20);			
+
+	
+
+	//TESTing Section
 	//ctx.fillText("Camera X: " + cameraLocX + " Camera Y: " + cameraLocY,stage.width*0.1,stage.height*0.05);
 	//ctx.fillText("Average Update Time: " + (-1)*updateTimeTotal/updateCount,stage.width*0.1,stage.height*0.05);
 	//ctx.fillText("Camera width: " + stage.width + " Camera Height: " + stage.height,stage.width*0.1,stage.height*0.15);
-	ctx.fillText("Selected Tile = " + selectedTile,stage.width*0.1,stage.height*0.15);
+	//ctx.fillText("Selected Tile = " + selectedTile,stage.width*0.1,stage.height*0.15);
 	
-	
-	
+
+
+	/***************************************************/	
+	/***************************************************/
+	/************** Game Loop Processing ***************/
+	/***************************************************/
+	/***************************************************/
+
 	
 	//Tower Movement
 		//sprites for tower are drawn above, don't think this section is needed(unless tracking creeps in which case move below creep movements)
@@ -696,13 +769,21 @@ function update()
 }
 
 
+	/***************************************************/	
+	/***************************************************/
+	/************** Creep Spawning *********************/
+	/***************************************************/
+	/***************************************************/
+
+
 
 //Creep Spawner
 function waveSetup(){
 	//console.log("Wave is Setup");
+	
 	clearInterval(timerspawnDelay);
 	clearInterval(timerwaveSpawner);
-	wave = wave + 1;
+	//wave = wave + 1;
 	
 	timerwaveSpawner = setTimeout(waveSpawner, 15000);
 }
@@ -711,6 +792,7 @@ function waveSpawner()
 {
 	//console.log("In Wave " + wave + " Spawner");
 	clearInterval(waveSetup);
+	wave = wave + 1;
 	timerwaveSetup = setTimeout(waveSetup,20000);
 	timerspawnDelay = setInterval(spawnCreeps,spawnDelay);
 	
@@ -733,7 +815,11 @@ function spawnCreeps(){
 	Creeps.sort(function(a,b) { return parseFloat(a.locY) - parseFloat(b.locY) } );
 }
 
-
+	/***************************************************/	
+	/***************************************************/
+	/************** Utility Functions ******************/
+	/***************************************************/
+	/***************************************************/
 //Utility Functions
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -767,33 +853,57 @@ function resizeCanvas(){
 	}
 	
 }
-/*
-      function getMousePos(canvas, evt) {
-        var rect = canvas.getBoundingClientRect();
-        return {
-          x: evt.clientX - rect.left,
-          y: evt.clientY - rect.top
-        };
-      }
-      var canvas =stage;
-      var context = ctx;
 
-      canvas.addEventListener('mousemove', function(evt) {
-        var mousePos = getMousePos(canvas, evt);
-        var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
-        console.log(message);//writeMessage(canvas, message);
-      }, false);
+	/***************************************************/	
+	/***************************************************/
+	/************** TIME FUNCTIONS *********************/
+	/***************************************************/
+	/***************************************************/
+//Horrible Timer Function
+function timeTracker(){
+	sec = sec + 1;
+	if (sec == 60) {
+		sec = 0;
+		min = min + 1
+		if (min == 60) {
+			min = 0;
+			hour = hour + 1;
+		}
+	}
+	var t = setTimeout(function(){timeTracker},999);
+}
 
-*/	
+function getTime() {
+    var today=new Date();
 
-//Touch Functions
+    var h=today.getHours();
+    var m=today.getMinutes();
+    var s=today.getSeconds();
+    m = checkTime(m);
+    s = checkTime(s);
+    //document.getElementById('txt').innerHTML = h+":"+m+":"+s;
+    //var t = setTimeout(function(){getTime()},500);
+	return [h,m,s];
+}
+
+function checkTime(i) {
+    if (i<10) {i = "0" + i};  // add zero in front of numbers < 10
+    return i;
+}
+
+
+/********************************************************/
+/***************** Touch Functions **********************/
+/********************************************************/
+var actualX;
+var actualY;
 function handleStart(evt) {
 	evt.preventDefault();
 	//document.getElementById("demo").innerHTML  = "Start";
-	mouseStart = true;
+	touched = true;
 	console.log("touchstart.");
-	startX = evt.changedTouches[0].pageX;
-	startY = evt.changedTouches[0].pageY;
+	startX = evt.changedTouches[0].screenX;
+	startY = evt.changedTouches[0].screenY;
 	/* var touches = evt.changedTouches;
 	//ctx.fillStyle = "black";
 	//ctx.fillRect(0, 0, stage.width, stage.height);	
@@ -813,6 +923,7 @@ function handleStart(evt) {
 
 function handleMove(evt) {
 		evt.preventDefault();
+		touchmoved = true;
 		var touches = evt.changedTouches;
 		document.getElementById("demo").innerHTML  = "Moving";
 		
@@ -836,38 +947,77 @@ function handleMove(evt) {
 
 function handleEnd(evt) {
 
-  evt.preventDefault();
-  log("touchend/touchleave.");
-  var touches = evt.changedTouches;
-
-  for (var i=0; i < touches.length; i++) {
-    var color = colorForTouch(touches[i]);
-    var idx = ongoingTouchIndexById(touches[i].identifier);
-	document.getElementById("demo").innerHTML  = "End";
-    if(idx >= 0) {
-      //ctx.lineWidth = 4;
-      //ctx.fillStyle = color;
-      //ctx.beginPath();
-      //ctx.moveTo(ongoingTouches[idx].pageX, ongoingTouches[idx].pageY);
-      //ctx.lineTo(touches[i].pageX, touches[i].pageY);
-      //ctx.fillRect(touches[i].pageX-4, touches[i].pageY-4, 8, 8);  // and a square at the end
-	  touchX = touches[i].pageX;
-	  touchY = touches[i].pageY;
-      ongoingTouches.splice(idx, 1);  // remove it; we're done
-    } else {
-      log("can't figure out which touch to end");
-    }
-  }
+	evt.preventDefault();
+	log("touchend/touchleave.");
+	var touches = evt.changedTouches;
+	//This is for multiple touches I'm just worried about 1
+	for (var i=0; i < touches.length; i++) {
+		var color = colorForTouch(touches[i]);
+		var idx = ongoingTouchIndexById(touches[i].identifier);
+		if(idx >= 0) {
+		
+			touchX = touches[i].pageX;
+			touchY = touches[i].pageY;
+			actualX = touchX + cameraLocX;
+			actualY = touchY + cameraLocY;
+			if (!touchmoved && !purchasing) {
+				for(var i = 0; i < Grid.length; i++){
+					if(actualX > Grid[i].locX && actualX < (Grid[i].locX + Grid[i].size)){
+					//document.getElementById("onEnd").innerHTML  = document.getElementById("onEnd").innerHTML + "<br>It is Within the X range";
+						if(actualY > Grid[i].locY && actualY < (Grid[i].locY + Grid[i].size)){
+							//document.getElementById("onEnd").innerHTML  = "Gride square " + i + " has been clicked!";
+							selectedTile = i;
+							if(Grid[selectedTile].tower == -1){
+								purchasing = true;
+							}
+						}
+					}
+				}
+			}
+			if(purchasing){
+				if(selectedTile != -1){
+					if(Grid[selectedTile].tower == -1){
+						if(actualY > Grid[selectedTile].locY-imgSize && actualY < Grid[selectedTile].locY && actualX > Grid[selectedTile].locX-imgSize && actualX < Grid[selectedTile].locX){
+							//Green purchase clicking
+							console.log("Green Clicked");
+							
+							
+							console.log("Creating Tower");
+							tempTow = new Tower("green",Grid[selectedTile].locX,Grid[selectedTile].locY);
+							Grid[selectedTile].tower = Towers.push(tempTow)-1;
+							
+							
+							purchasing = false;
+						} else if(actualY > Grid[selectedTile].locY-imgSize && actualY < Grid[selectedTile].locY && actualX > Grid[selectedTile].locX+imgSize && actualX < Grid[selectedTile].locX+imgSize*2){
+							//Cancel button clicked
+							selectedTile = -1;
+							purchasing = false;
+							console.log("Cancelling");
+						}
+					} else {
+						//something went wrong
+						console.log("AHHHHH!!!!");
+						purchasing = false;
+					}
+				}
+			}
+			touchmoved = false;
+			ongoingTouches.splice(idx, 1);  // remove it; we're done
+		} else {
+			log("can't figure out which touch to end");
+		}
+	}
 }
 
 function handleCancel(evt) {
-  evt.preventDefault();
-  log("touchcancel.");
-  var touches = evt.changedTouches;
-  
-  for (var i=0; i < touches.length; i++) {
-    ongoingTouches.splice(i, 1);  // remove it; we're done
-  }
+	evt.preventDefault();
+	log("touchcancel.");
+	var touches = evt.changedTouches;
+	touched = false;
+	touchmoved = false;
+	for (var i=0; i < touches.length; i++) {
+		ongoingTouches.splice(i, 1);  // remove it; we're done
+	}
 }
 
 //Util
@@ -951,8 +1101,7 @@ function mouseMove(evt) {
 		}
 	}
 }
-var actualX;
-var actualY;
+
 function mouseEnd(evt) {
 	evt.preventDefault();
 	mouseIsDown = false;
