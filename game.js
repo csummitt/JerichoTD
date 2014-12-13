@@ -683,7 +683,7 @@ function update()
 	/************** Game Loop Processing ***************/
 	/***************************************************/
 	/***************************************************/
-	if (Creeps.length < 50) {
+	if (Creeps.length < 300) {
 		
 		//Tower Movement
 			//sprites for tower are drawn above, don't think this section is needed(unless tracking creeps in which case move below creep movements)
