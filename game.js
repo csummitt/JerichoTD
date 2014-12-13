@@ -363,9 +363,9 @@ function preloading()
 
 	//Register Touch Events
 	stage.addEventListener('touchstart', handleStart, false);
-	stage.addEventListener('touchend', handleEnd, false);
+	stage.addEventListener("touchend", handleEnd, false);
 	stage.addEventListener('touchcancel', handleCancel, false);
-	stage.addEventListener('touchleave', handleEnd, false);
+	stage.addEventListener("touchleave", handleEnd, false);
 	stage.addEventListener('touchmove', handleMove, false);
 
 	//Mouse Events
@@ -637,9 +637,9 @@ function update()
 	if(selectedTile >= 0 && purchasing){
 		if(Grid[selectedTile].tower == -1 && Grid[selectedTile].buildable){
 			//No tower on tile create Hexegon
-			ctx.drawImage(greenimg,Grid[selectedTile].locX-imgSize,Grid[selectedTile].locY-imgSize,imgSize,imgSize);
-			ctx.drawImage(heximg,Grid[selectedTile].locX-imgSize,Grid[selectedTile].locY-imgSize,imgSize,imgSize);
-			ctx.drawImage(canimg,Grid[selectedTile].locX+imgSize,Grid[selectedTile].locY-imgSize,imgSize,imgSize);
+			ctx.drawImage(greenimg,Grid[selectedTile].locX-imgSize-cameraLocX,Grid[selectedTile].locY-imgSize-cameraLocY,imgSize,imgSize);
+			ctx.drawImage(heximg,Grid[selectedTile].locX-imgSize-cameraLocX,Grid[selectedTile].locY-imgSize-cameraLocY,imgSize,imgSize);
+			ctx.drawImage(canimg,Grid[selectedTile].locX+imgSize-cameraLocX,Grid[selectedTile].locY-imgSize-cameraLocY,imgSize,imgSize);
 			//ctx.drawImage(img,x,y,64,64);
 		}
 	}
@@ -926,7 +926,53 @@ function handleStart(evt) {
 	//	
 	//	console.log("touchstart:"+i+".");
 	//} 
-
+	//touchX = touches[0].screenX;
+	//touchY = touches[0].screenX;
+	actualX = startX + cameraLocX;
+	actualY = startY + cameraLocY;
+	if (!touchmoved && !purchasing) {
+		for(var i = 0; i < Grid.length; i++){
+			if(actualX > Grid[i].locX && actualX < (Grid[i].locX + Grid[i].size)){
+			//document.getElementById("onEnd").innerHTML  = document.getElementById("onEnd").innerHTML + "<br>It is Within the X range";
+				if(actualY > Grid[i].locY && actualY < (Grid[i].locY + Grid[i].size)){
+					//document.getElementById("onEnd").innerHTML  = "Gride square " + i + " has been clicked!";
+					selectedTile = i;
+					if(Grid[selectedTile].tower == -1){
+						purchasing = true;
+					}
+				}
+			}
+		}
+	}
+	if(purchasing){
+		if(selectedTile != -1){
+			if(Grid[selectedTile].tower == -1){
+				if(actualY > Grid[selectedTile].locY-imgSize && actualY < Grid[selectedTile].locY && actualX > Grid[selectedTile].locX-imgSize && actualX < Grid[selectedTile].locX){
+					//Green purchase clicking
+					console.log("Green Clicked");
+					
+					
+					console.log("Creating Tower");
+					tempTow = new Tower("green",Grid[selectedTile].locX,Grid[selectedTile].locY);
+					Grid[selectedTile].tower = Towers.push(tempTow)-1;
+					
+					
+					purchasing = false;
+				} else if(actualY > Grid[selectedTile].locY-imgSize && actualY < Grid[selectedTile].locY && actualX > Grid[selectedTile].locX+imgSize && actualX < Grid[selectedTile].locX+imgSize*2){
+					//Cancel button clicked
+					selectedTile = -1;
+					purchasing = false;
+					console.log("Cancelling");
+				}
+			} else {
+				//something went wrong
+				console.log("AHHHHH!!!!");
+				purchasing = false;
+			}
+		}
+	}
+	touchmoved = false;
+	ongoingTouches.splice(idx, 1);  // remove it; we're done
 }
 
 function handleMove(evt) {
@@ -954,7 +1000,6 @@ function handleMove(evt) {
 }
 
 function handleEnd(evt) {
-
 	evt.preventDefault();
 	logMessage("Touched Ended");
 	
@@ -1136,13 +1181,12 @@ function mouseEnd(evt) {
 				if(actualY > Grid[selectedTile].locY-imgSize && actualY < Grid[selectedTile].locY && actualX > Grid[selectedTile].locX-imgSize && actualX < Grid[selectedTile].locX){
 					//Green purchase clicking
 					console.log("Green Clicked");
-					
-					
-					console.log("Creating Tower");
-					tempTow = new Tower("green",Grid[selectedTile].locX,Grid[selectedTile].locY);
-					Grid[selectedTile].tower = Towers.push(tempTow)-1;
-					
-					
+					if (player.cash >= 50) {
+						console.log("Creating Tower");
+						player.cash = player.cash - 50;
+						tempTow = new Tower("green",Grid[selectedTile].locX,Grid[selectedTile].locY);
+						Grid[selectedTile].tower = Towers.push(tempTow)-1;
+					}
 					purchasing = false;
 				} else if(actualY > Grid[selectedTile].locY-imgSize && actualY < Grid[selectedTile].locY && actualX > Grid[selectedTile].locX+imgSize && actualX < Grid[selectedTile].locX+imgSize*2){
 					//Cancel button clicked
