@@ -123,6 +123,7 @@ var purchasing = false;
 /***************************************************/
 /***************************************************/
 /***************************************************/
+var logMessage = '';
 var startTime;
 var displaySec = 0;
 var displayMin = 0;
@@ -649,15 +650,17 @@ function update()
 	ctx.fillText(player.cash,stage.width*0.01+20,20);
 
 	//Creep Count Section
-	ctx.fillText(Creeps.length + "/300",stage.width*0.3,20);
+	ctx.fillText(Creeps.length + "/300",stage.width*0.25,20);
 
 	//Wave Info Section
-	ctx.fillText("Wave: " + wave,stage.width*0.6,20);
+	ctx.fillText("Wave: " + wave,stage.width*0.50,20);
 	
 	//Timer Section
-	ctx.fillText(hour + ":" + checkTime(min) + ":" + checkTime(sec),stage.width*0.9,20);			
+	ctx.fillText(hour + ":" + checkTime(min) + ":" + checkTime(sec),stage.width*0.75,20);			
 
-	
+	//Log Section
+	ctx.fillRect(0,30,stage.width,30)
+	ctx.fillText(logMessage, stage.width*0.01,35);
 
 	//TESTing Section
 	//ctx.fillText("Camera X: " + cameraLocX + " Camera Y: " + cameraLocY,stage.width*0.1,stage.height*0.05);
@@ -902,6 +905,7 @@ function handleStart(evt) {
 	//document.getElementById("demo").innerHTML  = "Start";
 	touched = true;
 	console.log("touchstart.");
+	logMessage = "Touch Started";
 	startX = evt.changedTouches[0].screenX;
 	startY = evt.changedTouches[0].screenY;
 	/* var touches = evt.changedTouches;
@@ -948,7 +952,8 @@ function handleMove(evt) {
 function handleEnd(evt) {
 
 	evt.preventDefault();
-	log("touchend/touchleave.");
+	logMessage("Touched Ended");
+	
 	var touches = evt.changedTouches;
 	//This is for multiple touches I'm just worried about 1
 	for (var i=0; i < touches.length; i++) {
@@ -1011,7 +1016,7 @@ function handleEnd(evt) {
 
 function handleCancel(evt) {
 	evt.preventDefault();
-	log("touchcancel.");
+	logMessage = "Touched Canceled";
 	var touches = evt.changedTouches;
 	touched = false;
 	touchmoved = false;
