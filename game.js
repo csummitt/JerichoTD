@@ -119,11 +119,12 @@ var buildArea = (GRID_WIDTH-spacing*6)/2;
 
 var ongoingTouches = new Array();
 var purchasing = false;
-
+var gameOver = false;
 /***************************************************/
 /***************************************************/
 /***************************************************/
 var logMessage = "Log";
+var timer;
 var startTime;
 var displaySec = 0;
 var displayMin = 0;
@@ -518,7 +519,7 @@ function preloading()
 		waveSetup();
 		updateTime = new Date().getTime();
 		gameloop = setInterval(update, TIME_PER_FRAME);
-		var t = setInterval(timeTracker,999);
+		timer = setInterval(timeTracker,999);
 }
 
 
@@ -664,10 +665,10 @@ function update()
 	ctx.fillText(hour + ":" + checkTime(min) + ":" + checkTime(sec),stage.width*0.75,20);			
 
 	//Log Section
-	ctx.fillStyle = 'white';
-	ctx.fillRect(0,30,stage.width,30)
-	ctx.fillStyle = 'black';
-	ctx.fillText(logMessage, stage.width*0.01,50);
+	//ctx.fillStyle = 'white';
+	//ctx.fillRect(0,30,stage.width,30)
+	//ctx.fillStyle = 'black';
+	//ctx.fillText(logMessage, stage.width*0.01,50);
 
 	//TESTing Section
 	//ctx.fillText("Camera X: " + cameraLocX + " Camera Y: " + cameraLocY,stage.width*0.1,stage.height*0.05);
@@ -682,7 +683,7 @@ function update()
 	/************** Game Loop Processing ***************/
 	/***************************************************/
 	/***************************************************/
-	if (Creeps.length < 300) {
+	if (Creeps.length < 50) {
 		
 		//Tower Movement
 			//sprites for tower are drawn above, don't think this section is needed(unless tracking creeps in which case move below creep movements)
@@ -777,9 +778,14 @@ function update()
 			}
 		}
 	} else {
+		clearInterval(timer);
+		clearInterval(timerwaveSetup);
+		clearInterval(timerspawnDelay);
+		clearInterval(timerwaveSpawner);
+		gameOver = true;
 		ctx.font = '50pt Calibri';
 		ctx.fillStyle = 'red';
-		ctx.fillText("GAME OVER", stage.width*0.1,stage.height/2+50);
+		ctx.fillText("GAME OVER", stage.width*0.05,stage.height/2+50);
 	}	
 	
 }
@@ -914,76 +920,82 @@ var actualX;
 var actualY;
 function handleStart(evt) {
 	evt.preventDefault();
-	//document.getElementById("demo").innerHTML  = "Start";
-	touched = true;
-	console.log("touchstart.");
-	logMessage = "Touch Started";
-	startX = evt.changedTouches[0].screenX;
-	startY = evt.changedTouches[0].screenY;
-	var touches = evt.changedTouches;
-	//ctx.fillStyle = "black";
-	//ctx.fillRect(0, 0, stage.width, stage.height);	
-	//for (var i=0; i < touches.length;i++){
-	//	log("tochstart:"+i+"...");
-	//	ongoingTouches.push(copyTouch(touches[i]));
-	//	var color = colorForTouch(touches[i]);
-	//	ctx.beginPath();
-	//	ctx.arc(touches[i].pageX, touches[i].pageY, 4, 0, 2*Math.PI, false); //A circle at the start
-	//	ctx.fillStyle = color;
-	//	ctx.fill();
-	//	}
-	//	console.log("touchstart:"+i+".");
-	//
-	//touchX = touches[0].screenX;
-	//touchY = touches[0].screenX;
-	actualX = startX + cameraLocX;
-	actualY = startY + cameraLocY;
-	if(!touchmoved && !purchasing){
+	if (!gameOver) {
+		//document.getElementById("demo").innerHTML  = "Start";
+		touched = true;
+		console.log("touchstart.");
+		logMessage = "Touch Started";
+		startX = evt.changedTouches[0].screenX;
+		startY = evt.changedTouches[0].screenY;
+		var touches = evt.changedTouches;
+		//ctx.fillStyle = "black";
+		//ctx.fillRect(0, 0, stage.width, stage.height);	
+		//for (var i=0; i < touches.length;i++){
+		//	log("tochstart:"+i+"...");
+		//	ongoingTouches.push(copyTouch(touches[i]));
+		//	var color = colorForTouch(touches[i]);
+		//	ctx.beginPath();
+		//	ctx.arc(touches[i].pageX, touches[i].pageY, 4, 0, 2*Math.PI, false); //A circle at the start
+		//	ctx.fillStyle = color;
+		//	ctx.fill();
+		//	}
+		//	console.log("touchstart:"+i+".");
+		//
+		//touchX = touches[0].screenX;
+		//touchY = touches[0].screenX;
+		actualX = startX + cameraLocX;
+		actualY = startY + cameraLocY;
+		if(!touchmoved && !purchasing){
+		
+			for(var i = 0; i < Grid.length; i++){
+				//document.getElementById("onEnd").innerHTML  = document.getElementById("onEnd").innerHTML  + "<br>" + i;
+				//document.getElementById("onEnd").innerHTML  = "ActualX: " + actualX + "<br>ActualY: " + actualY;
+				// document.getElementById("onEnd").innerHTML  = "<br>" + actualX + " > " + Grid[i].locX + " && " +  actualX + " < " + (Grid[i].locX + Grid[i].size);
+				if(actualX > Grid[i].locX && actualX < (Grid[i].locX + Grid[i].size)){
+				//document.getElementById("onEnd").innerHTML  = document.getElementById("onEnd").innerHTML + "<br>It is Within the X range";
+					if(actualY > Grid[i].locY && actualY < (Grid[i].locY + Grid[i].size)){
+						//document.getElementById("onEnd").innerHTML  = "Gride square " + i + " has been clicked!";
+						selectedTile = i;
+						if(Grid[selectedTile].tower == -1 && Grid[selectedTile].buildable){
+							purchasing = true;
+						}
+					}
+				}
+			}
+		}
+		if(purchasing){
+			if(selectedTile != -1){
+				if(Grid[selectedTile].tower == -1){
+					if(actualY > Grid[selectedTile].locY-imgSize && actualY < Grid[selectedTile].locY && actualX > Grid[selectedTile].locX-imgSize && actualX < Grid[selectedTile].locX){
+						//Green purchase clicking
+						console.log("Green Clicked");
+						if (player.cash >= 50) {
+							console.log("Creating Tower");
+							player.cash = player.cash - 50;
+							tempTow = new Tower("green",Grid[selectedTile].locX,Grid[selectedTile].locY);
+							Grid[selectedTile].tower = Towers.push(tempTow)-1;
+						}
+						purchasing = false;
+					} else if(actualY > Grid[selectedTile].locY-imgSize && actualY < Grid[selectedTile].locY && actualX > Grid[selectedTile].locX+imgSize && actualX < Grid[selectedTile].locX+imgSize*2){
+						//Cancel button clicked
+						selectedTile = -1;
+						purchasing = false;
+						console.log("Cancelling");
+					}
+				} else {
+					//something went wrong
+					console.log("AHHHHH!!!!");
+					purchasing = false;
+				}
+			}
+		}
+		touchmoved = false;
+		ongoingTouches.splice(idx, 1);  // remove it; we're done
+	} else {
+		ongoingTouches.splice(idx, 1);  // remove it; we're done
+		window.location = "index.html";
+	}
 	
-		for(var i = 0; i < Grid.length; i++){
-			//document.getElementById("onEnd").innerHTML  = document.getElementById("onEnd").innerHTML  + "<br>" + i;
-			//document.getElementById("onEnd").innerHTML  = "ActualX: " + actualX + "<br>ActualY: " + actualY;
-			// document.getElementById("onEnd").innerHTML  = "<br>" + actualX + " > " + Grid[i].locX + " && " +  actualX + " < " + (Grid[i].locX + Grid[i].size);
-			if(actualX > Grid[i].locX && actualX < (Grid[i].locX + Grid[i].size)){
-			//document.getElementById("onEnd").innerHTML  = document.getElementById("onEnd").innerHTML + "<br>It is Within the X range";
-				if(actualY > Grid[i].locY && actualY < (Grid[i].locY + Grid[i].size)){
-					//document.getElementById("onEnd").innerHTML  = "Gride square " + i + " has been clicked!";
-					selectedTile = i;
-					if(Grid[selectedTile].tower == -1 && Grid[selectedTile].buildable){
-						purchasing = true;
-					}
-				}
-			}
-		}
-	}
-	if(purchasing){
-		if(selectedTile != -1){
-			if(Grid[selectedTile].tower == -1){
-				if(actualY > Grid[selectedTile].locY-imgSize && actualY < Grid[selectedTile].locY && actualX > Grid[selectedTile].locX-imgSize && actualX < Grid[selectedTile].locX){
-					//Green purchase clicking
-					console.log("Green Clicked");
-					if (player.cash >= 50) {
-						console.log("Creating Tower");
-						player.cash = player.cash - 50;
-						tempTow = new Tower("green",Grid[selectedTile].locX,Grid[selectedTile].locY);
-						Grid[selectedTile].tower = Towers.push(tempTow)-1;
-					}
-					purchasing = false;
-				} else if(actualY > Grid[selectedTile].locY-imgSize && actualY < Grid[selectedTile].locY && actualX > Grid[selectedTile].locX+imgSize && actualX < Grid[selectedTile].locX+imgSize*2){
-					//Cancel button clicked
-					selectedTile = -1;
-					purchasing = false;
-					console.log("Cancelling");
-				}
-			} else {
-				//something went wrong
-				console.log("AHHHHH!!!!");
-				purchasing = false;
-			}
-		}
-	}
-	touchmoved = false;
-	ongoingTouches.splice(idx, 1);  // remove it; we're done
 }
 
 function handleMove(evt) {
@@ -1117,16 +1129,18 @@ function sleepFor( sleepDuration ){
 /***************** Mouse Movement **********************/
 /*******************************************************/
  function mouseStart(evt) {
-	evt.preventDefault();
-	
-	mouseIsDown = true;
-	//console.log("touchstart.");
-	startX = evt.screenX;
-	startY = evt.screenY;
-	
-	//document.getElementById("onStart").innerHTML  = "Started <br> StartX = " + startX + "&#09 startY = " + startY;
-	
 
+	evt.preventDefault();
+	if (!gameOver) {	
+		mouseIsDown = true;
+		//console.log("touchstart.");
+		startX = evt.screenX;
+		startY = evt.screenY;
+		
+		//document.getElementById("onStart").innerHTML  = "Started <br> StartX = " + startX + "&#09 startY = " + startY;
+	} else {
+		window.location = "index.html";
+	}	
 }
 
 function mouseMove(evt) {
