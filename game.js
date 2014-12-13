@@ -360,12 +360,15 @@ ctx.fillText(TEXT_PRELOADING, TEXT_PRELOADING_X, TEXT_PRELOADING_Y);
 function preloading()
 {	
 	clearInterval(preloader);
+
 	//Register Touch Events
 	stage.addEventListener('touchstart', handleStart, false);
 	stage.addEventListener('touchend', handleEnd, false);
 	stage.addEventListener('touchcancel', handleCancel, false);
 	stage.addEventListener('touchleave', handleEnd, false);
 	stage.addEventListener('touchmove', handleMove, false);
+
+	//Mouse Events
 	stage.addEventListener('mousedown', mouseStart, false);
 	stage.addEventListener('mousemove', mouseMove, false);
 	stage.addEventListener('mouseup', mouseEnd, false);
@@ -659,7 +662,9 @@ function update()
 	ctx.fillText(hour + ":" + checkTime(min) + ":" + checkTime(sec),stage.width*0.75,20);			
 
 	//Log Section
+	ctx.fillStyle = 'white';
 	ctx.fillRect(0,30,stage.width,30)
+	ctx.fillStyle = 'black';
 	ctx.fillText(logMessage, stage.width*0.01,35);
 
 	//TESTing Section
@@ -791,8 +796,7 @@ function waveSetup(){
 	timerwaveSpawner = setTimeout(waveSpawner, 15000);
 }
 var modifierTestArray = [];
-function waveSpawner()
-{
+function waveSpawner(){
 	//console.log("In Wave " + wave + " Spawner");
 	clearInterval(waveSetup);
 	wave = wave + 1;
@@ -908,20 +912,20 @@ function handleStart(evt) {
 	logMessage = "Touch Started";
 	startX = evt.changedTouches[0].screenX;
 	startY = evt.changedTouches[0].screenY;
-	/* var touches = evt.changedTouches;
+	var touches = evt.changedTouches;
 	//ctx.fillStyle = "black";
 	//ctx.fillRect(0, 0, stage.width, stage.height);	
 	for (var i=0; i < touches.length;i++){
 		log("tochstart:"+i+"...");
 		ongoingTouches.push(copyTouch(touches[i]));
-		//var color = colorForTouch(touches[i]);
-		//ctx.beginPath();
-		//ctx.arc(touches[i].pageX, touches[i].pageY, 4, 0, 2*Math.PI, false); //A circle at the start
-		//ctx.fillStyle = color;
-		//ctx.fill();
+		var color = colorForTouch(touches[i]);
+		ctx.beginPath();
+		ctx.arc(touches[i].pageX, touches[i].pageY, 4, 0, 2*Math.PI, false); //A circle at the start
+		ctx.fillStyle = color;
+		ctx.fill();
 		
 		console.log("touchstart:"+i+".");
-	} */
+	} 
 
 }
 
@@ -1037,7 +1041,7 @@ function colorForTouch(touch) {
   log("color for touch with identifier " + touch.identifier + " = " + color);
   return color;
 }
-
+ 
 function copyTouch(touch) {
   return { identifier: touch.identifier, pageX: touch.pageX, pageY: touch.pageY };
 }
