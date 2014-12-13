@@ -930,14 +930,18 @@ function handleStart(evt) {
 	//touchY = touches[0].screenX;
 	actualX = startX + cameraLocX;
 	actualY = startY + cameraLocY;
-	if (!touchmoved && !purchasing) {
+	if(!touchmoved && !purchasing){
+	
 		for(var i = 0; i < Grid.length; i++){
+			//document.getElementById("onEnd").innerHTML  = document.getElementById("onEnd").innerHTML  + "<br>" + i;
+			//document.getElementById("onEnd").innerHTML  = "ActualX: " + actualX + "<br>ActualY: " + actualY;
+			// document.getElementById("onEnd").innerHTML  = "<br>" + actualX + " > " + Grid[i].locX + " && " +  actualX + " < " + (Grid[i].locX + Grid[i].size);
 			if(actualX > Grid[i].locX && actualX < (Grid[i].locX + Grid[i].size)){
 			//document.getElementById("onEnd").innerHTML  = document.getElementById("onEnd").innerHTML + "<br>It is Within the X range";
 				if(actualY > Grid[i].locY && actualY < (Grid[i].locY + Grid[i].size)){
 					//document.getElementById("onEnd").innerHTML  = "Gride square " + i + " has been clicked!";
 					selectedTile = i;
-					if(Grid[selectedTile].tower == -1){
+					if(Grid[selectedTile].tower == -1 && Grid[selectedTile].buildable){
 						purchasing = true;
 					}
 				}
@@ -950,13 +954,12 @@ function handleStart(evt) {
 				if(actualY > Grid[selectedTile].locY-imgSize && actualY < Grid[selectedTile].locY && actualX > Grid[selectedTile].locX-imgSize && actualX < Grid[selectedTile].locX){
 					//Green purchase clicking
 					console.log("Green Clicked");
-					
-					
-					console.log("Creating Tower");
-					tempTow = new Tower("green",Grid[selectedTile].locX,Grid[selectedTile].locY);
-					Grid[selectedTile].tower = Towers.push(tempTow)-1;
-					
-					
+					if (player.cash >= 50) {
+						console.log("Creating Tower");
+						player.cash = player.cash - 50;
+						tempTow = new Tower("green",Grid[selectedTile].locX,Grid[selectedTile].locY);
+						Grid[selectedTile].tower = Towers.push(tempTow)-1;
+					}
 					purchasing = false;
 				} else if(actualY > Grid[selectedTile].locY-imgSize && actualY < Grid[selectedTile].locY && actualX > Grid[selectedTile].locX+imgSize && actualX < Grid[selectedTile].locX+imgSize*2){
 					//Cancel button clicked
@@ -978,6 +981,7 @@ function handleStart(evt) {
 function handleMove(evt) {
 		evt.preventDefault();
 		touchmoved = true;
+		purchasing = false;
 		var touches = evt.changedTouches;
 		//document.getElementById("demo").innerHTML  = "Moving";
 		logMessage = "Touched Moved";
